@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "module": "commonjs", // CommonJSモジュール形式で出力
+        "target": "es2022",   // ES2022 (ECMAScript 2022) 互換のJavaScriptを出力
+        "lib": [              // 含まれるライブラリ定義
+            "es2022"
+        ],
+        "sourceMap": true,    // ソースマップを生成 (デバッグに便利)
+        "rootDir": "src",     // TypeScriptソースファイルのルートディレクトリ
+        "outDir": "out",      // コンパイル済みJavaScriptファイルの出力先ディレクトリ
+        "strict": true,       // 厳格な型チェックを有効にする
+        "esModuleInterop": true, // CommonJSモジュールをES Modulesとしてインポートできるようにする
+        "skipLibCheck": true, // 型定義ファイルの型チェックをスキップする (ビルド速度向上)
+        "forceConsistentCasingInFileNames": true, // ファイル名の大文字・小文字の統一を強制
+        "resolveJsonModule": true // JSONファイルをモジュールとしてインポートできるようにする
+    },
+    "include": [
+        "src/**/*.ts" // srcフォルダ内のすべての.tsファイルをコンパイル対象に含める
+    ],
+    "exclude": [
+        "node_modules", // node_modulesは除外
+        ".vscode-test" // VS Codeテスト関連のフォルダも除外
+    ]
+}

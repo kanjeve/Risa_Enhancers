@@ -1,0 +1,90 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Asir",
+    "patterns": [
+        { "include": "#comments" },      
+        { "include": "#keywords" },      
+        { "include": "#strings" },      
+        { "include": "#numbers" },       
+        { "include": "#operators" },     
+        { "include": "#built-in-functions" }, 
+        { "include": "#language-constants" },
+        { "include": "#types" },
+        { "include": "#punctuation" } ,
+        { "include": "#functions" },
+        { "include": "#variables" } 
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [{
+                "name": "comment.block.rr",
+                "begin": "/\\*",
+                "end": "\\*/",
+                "patterns": [
+                    {                            
+					"name": "comment.block.documentation.rr",
+                    "match": "(@[a-zA-Z]+)"
+                    }
+                ]
+            }]
+        },
+        "keywords": {
+            "patterns": [{
+                "name": "keyword.control.rr",
+                "match": "\\b(def|return|if|else|for|while|break|continue|true|false|end)\\b" 
+            }]
+        },
+        "strings": {
+            "name": "string.quoted.double.rr",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.rr",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        "numbers": {
+            "name": "constant.numeric.rr",
+            "match": "\\b\\d+(\\.\\d*)?([eE][+-]?\\d+)?\\b"
+        },
+        "operators": {
+            "name": "keyword.operator.rr",
+            "match": "[+\\-*/%=<>&|!^]" 
+        },
+        "built-in-functions": {
+            "name": "support.function.builtin.rr",
+            "match": "\\b(load|import|ctrl|cputime|append|gcd|list|matrix|print)\\b" 
+        },
+        "language-constants": {
+            "name": "constant.language.rr",
+            "match": "\\b(true|false|null)\\b" 
+        },
+        "types": {
+            "name": "storage.type.rr",
+            "match": "\\b(int|poly|list|matrix|vector)\\b" 
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.separator.delimiter.rr",
+                    "match": "[,;:]" 
+                },
+                {
+                    "name": "punctuation.bracket.square.rr",
+                    "match": "[\\[\\]]"
+                },
+                {
+                    "name": "punctuation.bracket.curly.rr",
+                    "match": "[{}]"
+                },
+                {
+                    "name": "punctuation.bracket.parenthesis.rr",
+                    "match": "[()]"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.rr"
+}

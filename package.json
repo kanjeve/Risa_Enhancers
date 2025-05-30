@@ -1,0 +1,65 @@
+{
+  "name": "risa-enhancers",
+  "displayName": "Risa_Enhancers",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "",
+  "repository": {},
+  "bugs": {},
+  "homepage": "",
+  "activationEvents": [
+    "onLanguage:rr",
+    "onNotebook:jupyter-notebook"
+  ],
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Themes",
+    "Linters"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "rr",
+      "aliases": ["Asir", "rr"],
+      "extensions": [".rr"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "rr",
+      "scopeName": "source.rr",
+      "path": "./syntaxes/rr.tmLanguage.json"
+    }],
+    "snippets": [{
+      "language": "rr",
+      "path": "./snippets/rr.json"
+    }],
+    "commands": [ {
+      "command": "risa-enhancers.helloWorld",
+      "title": "Hello VS Code from Risa Enhancers!"
+    }],
+    "completionProviders": [ {
+      "language": "rr", 
+      "selector": [
+        { "language": "rr", "pattern": ".*(load|import|ctrl)\\\\(\\\\s*\\\\\"[^\"\\\\]*$" }
+      ],
+      "triggerCharacters": ["\"", "("] 
+    }],
+    "themes": [{
+        "label": "Asir Custom Theme",
+        "uiTheme": "vs", 
+        "path": "./themes/asir-custom-theme.json"
+    }]
+  },
+  "devDependencies": { 
+        "@types/vscode": "^1.100.0", 
+        "@types/node": "^22.0.0",   
+        "@typescript-eslint/eslint-plugin": "^5.x", 
+        "@typescript-eslint/parser": "^5.x",        
+        "eslint": "^8.x",                           
+        "typescript": "^5.x"                        
+    }
+}
