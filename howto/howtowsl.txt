@@ -1,0 +1,158 @@
+WSLのインストール
+
+1. 
+ターミナルで`wsl --install`
+
+`wsl -l -v`を実行して、バージョンなどが確認できればOK
+できなければ、
+`wsl --update`
+`wsl --shutdown`
+を実行してから再び`wsl --install`
+
+2.
+自動的にubuntuが立ち上がるので、そこで名前とパスワードを設定したら、
+`sudo apt update`
+`sudo apt full-upgrade`
+
+3.
+WSLでgitを利用できるようにするために
+`sudo nano /etc/wsl.conf`
+
+実行すると、wsl.confという設定ファイルが立ち上がる。
+記述できるので、（とりあえず）一番下に次を記入。
+```
+[automount]
+options = "metadata"
+```
+
+4.
+WSLをシャットダウンする。
+おススメはWindowsのターミナルを別で立ち上げて、`wsl --shutdown`を記入する。
+
+5.
+再びWSL(ubuntu)を起動する。
+スタートメニューからubuntuを検索するなりして「Ubuntu」をクリックすれば起動できる。
+
+6.（実はいらないかもしれない）
+WSLで以下を実行。
+`sudo apt update`
+`sudo apt install build-essential`
+`sudo apt install libncurses-dev`
+`sudo apt install m4`
+`sudo apt install bison flex`
+`sudo apt install libx11-dev`
+`sudo apt install libpaper-utils`（必須ではない）
+
+7.
+WSLで以下を順に実行。
+`cd OpenXM/src`
+`make config`        <-- これをやり忘れてたから上のやつが必要になった。
+`make install`
+`cd ~`
+`cd OpenXM/rc`
+`sudo make install`
+
+8.
+WSLで`asir`や`openxm asir`と打ち込んでRisa/Asirが起動することを確認する。
+
+~fin~
+--------------------------------------------------------------------------------------------------------------------
+
+jupyterを入れて動かす。
+
+1. 
+WSLにjupyterをインストール
+`sudo apt update`
+`sudo apt install jupyter-notebook`
+
+2.
+asir_cliを作る。
+`cd OpenXM/src/jupyter`
+` make install-debian-for-debug`
+
+3.
+Windows側で、エクスプローラーを開きLinux/Ubuntu/home/(設定した名前)に行き、.bashrcというファイルを開く。
+.bashrcファイルの末尾に`export PATH="$HOME/bin:$PATH"`と書き込み、保存。
+WSLを再起動し、WSLに`which asir_cli`と打ち込み、パスが通ったことを確認する。
+
+4.
+venvをインストールする。
+`sudo apt update`
+`sudo apt install python3.12-venv`
+
+もし、インストールさえなければ、エラーの指示に従う。（python3.10にして、とか）
+
+5. 
+仮想環境を作る。
+`python3 -m venv ~/my_jupyter_env`
+`source ~/my_jupyter_env/bin/activate`
+これで、プロンプト（今カーソルがある行）の先頭に(my_jupyter_env)と書かれていれば、成功。
+
+仮想環境にもjupyterを入れる。（もしかすると、元のjupyterはいらないかも）
+`pip install notebook metakernel`
+
+6. 
+asirカーネルを作る。
+`cd ~/OpenXM/src/jupyter`
+` python -c 'import site; print(site.getsitepackages())'`
+
+出力されたリストのうち、最初の要素がパスとなるので、コピーする。
+（例：/home/（名前）/my_jupyter_env/lib/python3.12/site-packages）
+このパスをVENV_SITE_PACKAGES_DIRとする。
+`VENV_SITE_PACKAGES_DIR="/home/（名前）/my_jupyter_env/lib/python3.12/site-packages"`
+`mkdir -p "${VENV_SITE_PACKAGES_DIR}/asir_kernel"`
+
+openxmのパス（OPENMX_JUPYTER_DIRとする）も同様に設定する。
+`OPENXM_JUPYTER_DIR="$(pwd)"`
+（もし、うまくいかなければ`cd ~`して、`cd OpenXM/src/jupyter`してから実行してみる。）
+
+必要なファイルをリンクとして配置する。（必要なものは~/OpenXM/src/jupyterの中にある、.py系のやつ）
+`ln -s -f "${OPENXM_JUPYTER_DIR}/__init__.py" "${VENV_SITE_PACKAGES_DIR}/asir_kernel/__init__.py"`
+`ln -s -f "${OPENXM_JUPYTER_DIR}/kernel.py" "${VENV_SITE_PACKAGES_DIR}/asir_kernel/kernel.py"`
+`ln -s -f "${OPENXM_JUPYTER_DIR}/kernel.json" "${VENV_SITE_PACKAGES_DIR}/asir_kernel/kernel.json"`
+（もしかしたらいらないかも：`ln -s -f "${OPENXM_JUPYTER_DIR}/__main__.py" "${VENV_SITE_PACKAGES_DIR}/asir_kernel/__main__.py"`）
+
+確認のために`ls -l "${VENV_SITE_PACKAGES_DIR}/asir_kernel/"`
+（kernel.json -> ～/OpenXM/src/jupyter/kernel.json　があればok）
+
+7.
+kernel.jsonを編集する。
+`nano ~/.local/share/jupyter/kernels/asir/kernel.json`
+上を入力すると、kernel.jsonが開く。
+
+argvの部分を次のように編集する。（変えなくてもいいかもしれない）
+"argv": ["python", "-m", "asir_kernel", "-f", "{connection_file}"],
+
+`Ctrl + X`から`y`から`Enter`
+
+8.
+jupyterにカーネルを登録する。
+`jupyter kernelspec install . --user --name asir`
+
+9. 
+ファイアウォールの設定
+Windowsのスタートメニューを右クリックして「ファイル名を指定して実行」を選択
+「wf.msc」と入力してEnter
+
+左側にある「受信の規則」をクリック
+右側にある「操作」をクリック
+「ポート」を選択し、「次へ」をクリック
+「TCP」を選択、「特定のローカル ポート」を選択、「8888」を入力（もし、jupyterを別のポートで起動している場合はその番号を入力）、「次へ」をクリック
+「接続を許可する」を選択し、「次へ」をクリック
+「プライベート」にチェックを入れて「次へ」をクリック（「プライベート」以外は外した方が無難）
+名前と説明を入力して「完了」をクリック（名前はJupyter Notebook(WSL)みたいな簡潔で分かりやすいもの）
+
+10.
+jupyter notebookを起動する。
+WSLで`source ~/my_jupyter_env/bin/activate`を実行。
+`juoyter notebook`を実行すると、URLが表示されるので、Ctrkキーを押しながらクリック
+すると、Windows上のブラウザでjupyter notebookが起動する。
+右上側に新しいノートブックを作成できる「New」というボタンがあるので、押す。
+カーネルを選択するところに、「Asir」とあることを確認し、選択。
+実際に新しいノートブックで、「1+1;」などを実行して計算されることを確認する。
+（おすすめは「a=1;」を実行してエラーが出ることや、まずは「cyclic(2);」を実行してエラーが出ることを確認した後に、「load("cyclic");」を実行してから「cyclic(2);」を実行して多項式が表示されることを確認する。）
+
+~fin~
+P.S. 次回以降使うときも
+`source ~/my_jupyter_env/bin/activate`
+`juoyter notebook`

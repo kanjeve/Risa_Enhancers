@@ -2,7 +2,7 @@
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "publisher": "",
   "repository": {},
   "bugs": {},
@@ -73,13 +73,25 @@
         },
         "risaasirExecutor.asirPathLinux": {
           "type": "string",
-          "default": "/usr/bin/asir", 
+          "default": "/usr/local/bin/asir", 
           "description": "Path to the Risa/Asir executable on Linux (e.g., in WSL)."
         },
         "risaasirExecutor.asirPathMac": {
           "type": "string",
           "default": "/Applications/asir.app/Contents/MacOS/asir", 
           "description": "Path to the Risa/Asir executable on macOS."
+        },
+        "risaasirExecutor.useWslFromWindows": {
+          "type": "boolean",
+          "default": false,
+          "description": "When running VS Code on Windows, use WSL to execute Risa/Asir (requires WSL to be installed).",
+          "scope": "resource"
+        },
+        "risaasirExecutor.wslDistribution": {
+          "type": "string",
+          "default": "Ubuntu",
+          "description": "The name of the WSL distribution to use (e.g., Ubuntu, Debian). Only applicable if 'Use WSL from Windows' is enabled.",
+          "scope": "resource"
         }
       }
     },

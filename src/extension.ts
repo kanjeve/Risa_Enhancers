@@ -1,28 +1,49 @@
 import * as vscode from 'vscode';
-import * as path from 'path'; // pathモジュールをインポート
-import * as fs from 'fs';   // fsモジュールをインポート
+import * as path from 'path';
+import * as fs from 'fs';
 import { spawn } from 'child_process';
-import * as os from 'os';
+import * as os from 'os'; 
 
-// パッケージリストの型定義
+// パッケージリストの型定義 
 interface PackageInfo {
     name: string;
     description: string;
 }
 
-let loadedPackages: PackageInfo[] = []; // パッケージリストを保持する変数
+let loadedPackages: PackageInfo[] = []; // パッケージリストを保持する変数 
 let ctrlPackages: PackageInfo[] = [];   // ctrl 用のパッケージリスト
 
-// このメソッドは、拡張機能がアクティブ化されたときに呼び出されます。
-// activationEvents に定義されたイベントが発生したときに実行されます。
+// ステータスバーにWSL変更ボタンの追加
+let asirModeStatusBarItem: vscode.StatusBarItem;
+
+// ステータスバーアイテムの表示を更新する関数
+async function updateStatusBarMode(context: vscode.ExtensionContext) {
+    const config = vscode.workspace.getConfiguration('risaasirExecutor');
+    const useWsl = config.get<boolean>('useWslFromWindows', false);
+
+    if (process.platform === 'win32') {
+        // Windowsの場合のみ、モード切り替えボタンを表示
+        if (!asirModeStatusBarItem) {
+            asirModeStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+            asirModeStatusBarItem.command = 'risaasir.toggleExecutionMode'; // クリック時のコマンド
+            context.subscriptions.push(asirModeStatusBarItem);
+        }
+
+        asirModeStatusBarItem.text = `$(sync) Risa/Asir: ${useWsl ? 'WSL' : 'Windows'}`;
+        asirModeStatusBarItem.tooltip = `Click to switch Risa/Asir execution mode to ${useWsl ? 'Windows Native' : 'WSL'}`;
+        asirModeStatusBarItem.show();
+    } else {
+        // Windows以外のOSでは、このモード切り替えボタンは非表示
+        if (asirModeStatusBarItem) {
+            asirModeStatusBarItem.hide();
+        }
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
-    // コンソールにメッセージを出力して、拡張機能がアクティブ化されたことを確認できます。
     console.log('Congratulations, your extension "risa-enhancers" is now active!');
 
-    // --- Risa/Asir CLI 実行結果用の出力チャンネルを作成 ---
-    // 拡張機能がアクティブ化されたときに一度だけ作成します
     const asirOutputChannel = vscode.window.createOutputChannel('Risa/Asir CLI Output');
-    // 後で登録するコマンドで使用するため、context.subscriptions に追加します
     context.subscriptions.push(asirOutputChannel);
 
     // --- パッケージリストの読み込み ---
@@ -46,149 +67,254 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     // --- Completion Provider の登録 ---
-    // load(" の後に補完をトリガー
     const provider = vscode.languages.registerCompletionItemProvider('rr', {
         provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
             const linePrefix = document.lineAt(position).text.substring(0, position.character);
-            console.log(`Current linePrefix: '${linePrefix}'`);
-
-            // load(" のパターンに一致するかどうかをチェック
-            // ここでは、"load(\"" または "load( \"" のパターンに一致する文字列を探します
-            // 正規表現で、末尾の " の後の部分も考慮します
             const match = linePrefix.match(/(load|import|ctrl)\(\s*\"([^"]*)$/);
 
             if (!match) {
-                console.log('Regex did not match.');
-                // load(" のパターンに一致しない場合は補完しない
                 return undefined;
             }
 
-            const functionName = match[1]; // "load", "import", または "ctrl"
-            // ダブルクォートの内部で入力されたテキスト（元は[1]だった）
+            const functionName = match[1];
             const typedText = match[2];
-            console.log(`Regex matched! functionName: '${functionName}', typedText: '${typedText}'`);
-
             let targetPackages: PackageInfo[] = [];
 
-            // どの関数がトリガーされたかによって、使用するパッケージリストを切り替える
             if (functionName === 'load' || functionName === 'import') {
                 targetPackages = loadedPackages;
             } else if (functionName === 'ctrl') {
                 targetPackages = ctrlPackages;
-            } else {
-                // 想定外の関数名がマッチした場合のログ
-                console.warn(`Unexpected function name matched: ${functionName}`);
+            } else { 
                 return undefined;
             }
 
             const completionItems: vscode.CompletionItem[] = [];
-
             targetPackages.forEach(pkg => {
-                // 入力されたテキストでパッケージ名をフィルタリング
                 if (pkg.name.startsWith(typedText)) {
-                    const item = new vscode.CompletionItem(pkg.name, vscode.CompletionItemKind.Module); // Moduleはアイコンの種類
-                    item.detail = pkg.description; // 補完候補の右側に表示される詳細
-                    item.insertText = pkg.name;   // 実際に挿入されるテキスト
-
-                    // ここで、挿入されるテキストが "bfct" のように
-                    // 引用符の中に入るように調整できます。
-                    // insertText は `name` そのものでOKです。
-                    // VS Codeが自動的にカーソルを移動させる場合は $0 は不要。
-                    console.log(`Adding completion item: ${pkg.name}`);
+                    const item = new vscode.CompletionItem(pkg.name, vscode.CompletionItemKind.Module);
+                    item.detail = pkg.description;
+                    item.insertText = pkg.name;
                     completionItems.push(item);
                 }
             });
-            console.log(`Returning ${completionItems.length} completion items.`);
             return completionItems;
         }
-    },
-    // トリガー文字を指定。
-    // load(" のダブルクォートの後ろで補完がトリガーされるように '\"' を指定。
-    // これにより、ユーザーが `load("` と入力した直後に補完がトリガーされます。
-    // 必要に応じて、さらに ',' (カンマ) やスペースも追加できます。
-    '"'
-    );
-
+    }, '"');
     context.subscriptions.push(provider);
 
     // --- Risa/Asir CLI 実行コマンドの登録 ---
-    // 'risa-enhancers.executeCode' コマンドを登録します
-    let disposableAsirExecute = vscode.commands.registerCommand('risa_enhancers.executeCode', () => {
+    let disposableAsirExecute = vscode.commands.registerCommand('risa_enhancers.executeCode', async () => { // async を追加
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const document = editor.document;
             const selection = editor.selection;
-            // 選択範囲がある場合はそのテキスト、ない場合はドキュメント全体のテキストを取得
             const textToExecute = document.getText(selection.isEmpty ? undefined : selection);
-            // WSL上のRisa/Asir実行ファイルのパス。必要に応じて変更してください
-            const asirPath = '/usr/local/bin/asir'; 
 
-            // 出力チャンネルをクリアし、表示
+            // 拡張機能の設定からRisa/Asirのパスを取得
+            let command: string;
+            let args: string[] = [];
+            let displayMessage: string;
+
+            // VS Codeの設定から、WSL経由実行の希望とディストリビューション名を取得
+            const config = vscode.workspace.getConfiguration('risaasirExecutor');
+
+            // OSを判定
+            const platform = process.platform;
+            console.log(`Detected OS platform: ${platform}`);
+
+            if (platform === 'win32') {
+                // Windowsの場合 
+                const useWslFromWindows = config.get<boolean>('useWslFromWindows',false);
+                if (useWslFromWindows) {
+                    // Windows上でWSL経由で実行する場合
+                    const wslDistribution = config.get<string>('wslDistribution', 'Ubuntu');
+                    const asirPathLinux = config.get<string>('asirPathLinux');
+
+                    command = 'wsl'; // wsl を直接呼び出す
+                    const wslCommand = `${asirPathLinux || 'asir'} <<'EOF'\n${textToExecute}\nquit;\nEOF`; // WSL内のパスを取得
+                    // WSLコマンド: wsl.exe -d <distro_name> <command_to_run_in_wsl>
+                    args = ['-d', wslDistribution, `bash`, '-c', wslCommand];
+                    displayMessage = `Executing Risa/Asir WSL (${wslDistribution})...`;
+                } else {
+                    // Windows上でWindowsネイティブのRisa/Asirを実行する場合
+                    const asirPathWindows = config.get<string>('asirPathWindows');
+                    command = `"${asirPathWindows || 'asir.exe'}"`;
+                    args = [];
+
+                    // Windowsネイティブのasir向けに quit; を stdin に追加
+                    const fullCommand = textToExecute + '\nquit;\n';
+
+                    asirOutputChannel.clear();
+                    asirOutputChannel.show(true);
+                    asirOutputChannel.appendLine(`--- Executing Risa/Asir code on Windows natively ---`);
+                    // asirOutputChannel.appendLine(`Command: ${command}`);
+                    asirOutputChannel.appendLine(`Input:\n${textToExecute}\n---`);
+
+                    try {
+                        const process = spawn(command, args, { shell: true }); // shell: true を追加
+
+                        process.stdin.write(fullCommand);
+                        process.stdin.end();
+
+                        process.stdout.on('data', (data: Buffer) => {
+                            asirOutputChannel.append(data.toString());
+                        });
+                        process.stderr.on('data', (data: Buffer) => {
+                            asirOutputChannel.appendLine(`Error from Risa/Asir: ${data.toString()}`);
+                        });
+                        process.on('close', (code) => {
+                            if (code !== 0) {
+                                asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
+                                vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
+                            } else {
+                                asirOutputChannel.appendLine(`--- Risa/Asir execution finished successfully ---`);
+                            }
+                        });
+                        process.on('error', (err) => {
+                            asirOutputChannel.appendLine(`Failed to start Risa/Asir process: ${err.message}`);
+                            vscode.window.showErrorMessage(`Failed to start Risa/Asir: ${err.message}. Check if Risa/Asir is installed correctly and path is set in settings.`);
+                        });
+                    } catch (err: any) {
+                        asirOutputChannel.appendLine(`General error during Risa/Asir execution: ${err.message}`);
+                        vscode.window.showErrorMessage(`An unexpected error occurred during Risa/Asir execution: ${err.message}`);
+                    }
+                    return; // ここで処理を終了
+                }
+            } else if (platform === 'darwin') {
+                // macOSの場合
+                const asirPathMac = config.get<string>('asirPathMac');
+                command = asirPathMac || 'asir'; // 設定がなければデフォルトのasirを試す
+                args = []; // コマンドライン引数は基本的に不要
+                displayMessage = 'Executing Risa/Asir on macOS...';
+                // macOSもquit;をstdinに送る方式
+                const fullCommand = textToExecute + '\nquit;\n';
+
+                asirOutputChannel.clear();
+                asirOutputChannel.show(true);
+                asirOutputChannel.appendLine(`--- Executing Risa/Asir code on macOS ---`);
+                // asirOutputChannel.appendLine(`Command: ${command} ${args.join(' ')}`);
+                asirOutputChannel.appendLine(`Input:\n${textToExecute}\n---`);
+
+                try {
+                    const process = spawn(command, args);
+                    process.stdin.write(fullCommand);
+                    process.stdin.end();
+
+                    process.stdout.on('data', (data: Buffer) => {
+                        asirOutputChannel.append(data.toString());
+                    });
+                    process.stderr.on('data', (data: Buffer) => {
+                        asirOutputChannel.appendLine(`Error from Risa/Asir: ${data.toString()}`);
+                    });
+                    process.on('close', (code) => {
+                        if (code !== 0) {
+                            asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
+                            vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
+                        } else {
+                            asirOutputChannel.appendLine(`--- Risa/Asir execution finished successfully ---`);
+                        }
+                    });
+                    process.on('error', (err) => {
+                        asirOutputChannel.appendLine(`Failed to start Risa/Asir process: ${err.message}`);
+                        vscode.window.showErrorMessage(`Failed to start Risa/Asir: ${err.message}. Check if Risa/Asir is installed correctly and path is set in settings.`);
+                    });
+                } catch (err: any) {
+                    asirOutputChannel.appendLine(`General error during Risa/Asir execution: ${err.message}`);
+                    vscode.window.showErrorMessage(`An unexpected error occurred during Risa/Asir execution: ${err.message}`);
+                }
+                return; // ここで処理を終了
+            } else if (platform === 'linux') {
+                // Linuxの場合 (WSLを含む)
+                const asirPathLinux = config.get<string>('asirPathLinux');
+                // WSLで実行する場合は、bash -c "asirPath" の形式を使う
+                // ただし、asirPathがWSL内のパスである前提
+                command = 'bash';
+                const wslCommand = `${asirPathLinux || 'asir'} <<'EOF'\n${textToExecute}\nquit;\nEOF`;
+                args = ['-c', wslCommand]; // 設定がなければデフォルトのasirを試す
+                displayMessage = 'Executing Risa/Asir on Linux...';
+            } else {
+                vscode.window.showErrorMessage(`Unsupported OS platform: ${platform}`);
+                return;
+            }
+
             asirOutputChannel.clear();
             asirOutputChannel.show(true);
-            asirOutputChannel.appendLine(`--- Executing Risa/Asir code ---`);
+            asirOutputChannel.appendLine(`---${displayMessage} ---`);
+            // asirOutputChannel.appendLine(`Command: ${command} ${args.join(' ')}`);
             asirOutputChannel.appendLine(`Input:\n${textToExecute}\n---`);
 
-            // Risa/Asir プロセスを起動
-            // WSL上のコマンドを実行する場合、シェルを指定して実行することが推奨されます。
-            // `bash -c "asir"` の形式でWSLコマンドを実行し、テキストを標準入力に渡します。
-            const process = spawn('bash', ['-c', `${asirPath}`]);
+            try {
+                const process = spawn(command, args);
 
-            // Risa/Asir プロセスの標準入力にコードを書き込む
-            process.stdin.write(textToExecute + '\n'); // 最後の改行でコマンド入力を確定させる
-            process.stdin.end(); // 入力ストリームを閉じる
+                process.stdout.on('data', (data: Buffer) => {
+                    asirOutputChannel.append(data.toString());
+                });
 
-            // 標準出力からのデータを受け取り、出力チャンネルに表示
-            process.stdout.on('data', (data: Buffer) => {
-                asirOutputChannel.append(data.toString()); // appendLineではなくappendで、改行はRisa/Asirの出力に任せる
-            });
+                process.stderr.on('data', (data: Buffer) => {
+                    asirOutputChannel.appendLine(`Error from Risa/Asir: ${data.toString()}`);
+                });
 
-            // 標準エラー出力からのデータを受け取り、出力チャンネルに表示（エラーがあった場合）
-            process.stderr.on('data', (data: Buffer) => {
-                asirOutputChannel.appendLine(`Error from Risa/Asir: ${data.toString()}`);
-            });
+                process.on('close', (code) => {
+                    if (code !== 0) {
+                        asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
+                        vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
+                    } else {
+                        asirOutputChannel.appendLine(`--- Risa/Asir execution finished successfully ---`);
+                    }
+                });
 
-            // プロセス終了時の処理
-            process.on('close', (code) => {
-                if (code !== 0) {
-                    // 終了コードが0以外は異常終了
-                    asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
-                    vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
-                } else {
-                    // 正常終了
-                    asirOutputChannel.appendLine(`--- Risa/Asir execution finished successfully ---`);
-                }
-            });
+                process.on('error', (err) => {
+                    asirOutputChannel.appendLine(`Failed to start Risa/Asir process: ${err.message}`);
+                    vscode.window.showErrorMessage(`Failed to start Risa/Asir: ${err.message}. Check if Risa/Asir is installed correctly and path is set in settings.`);
+                });
 
-            // プロセス起動エラー（Risa/Asirが見つからないなど）
-            process.on('error', (err) => {
-                asirOutputChannel.appendLine(`Failed to start Risa/Asir process: ${err.message}`);
-                vscode.window.showErrorMessage(`Failed to start Risa/Asir: ${err.message}. Check if Risa/Asir is installed correctly at ${asirPath} in WSL.`);
-            });
+            } catch (err: any) { // エラーの型を指定
+                asirOutputChannel.appendLine(`General error during Risa/Asir execution: ${err.message}`);
+                vscode.window.showErrorMessage(`An unexpected error occurred during Risa/Asir execution: ${err.message}`);
+            }
 
         } else {
-            // アクティブなエディタがない場合
             vscode.window.showInformationMessage('No active text editor to execute Risa/Asir code.');
         }
     });
 
-    // 登録したコマンドを拡張機能のサブスクリプションに追加
     context.subscriptions.push(disposableAsirExecute);
+
+        // --- 実行モードを切り替えるコマンド ---
+    let disposableToggleMode = vscode.commands.registerCommand('risaasir.toggleExecutionMode', async () => {
+        const config = vscode.workspace.getConfiguration('risaasirExecutor');
+        const currentModeIsWsl = config.get<boolean>('useWslFromWindows', false);
+        const newModeIsWsl = !currentModeIsWsl; // 現在のモードを反転
+
+        await config.update('useWslFromWindows', newModeIsWsl, vscode.ConfigurationTarget.Workspace);
+
+        // 設定が更新されたので、ステータスバーを再描画
+        updateStatusBarMode(context);
+
+        vscode.window.showInformationMessage(`Risa/Asir execution mode switched to: ${newModeIsWsl ? 'WSL' : 'Windows Native'}`);
+    });
+    context.subscriptions.push(disposableToggleMode);
 
     // --- ステータスバーアイテムの作成と登録 ---
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    statusBarItem.command = 'risa_enhancers.executeCode'; // クリック時に実行されるコマンド
-    statusBarItem.text = '$(play) Run Risa/Asir'; // ボタンに表示されるテキスト (アイコンも含む)
-    statusBarItem.tooltip = 'Execute Risa/Asir code'; // ホバー時に表示されるツールチップ
-    statusBarItem.show(); // ステータスバーアイテムを表示
+    statusBarItem.command = 'risa_enhancers.executeCode';
+    statusBarItem.text = '$(play) Run Risa/Asir';
+    statusBarItem.tooltip = 'Execute Risa/Asir code';
+    statusBarItem.show();
+    context.subscriptions.push(statusBarItem)
 
-    context.subscriptions.push(statusBarItem); // 拡張機能終了時にアイテムが非表示になるように登録
+    updateStatusBarMode(context);
 
-    // コード診断の登録
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('risaasirExecutor.useWslFromWindows')){
+            updateStatusBarMode(context);
+        }
+    }));
+
+    // --- コード診断の登録  ---
     const diagnosticCollection = vscode.languages.createDiagnosticCollection('risa-enhancers');
     context.subscriptions.push(diagnosticCollection);
 
-    // ドキュメントが開かれたとき、または内容が変更されたときに診断を実行
     vscode.workspace.onDidOpenTextDocument(document => {
         if (document.languageId === 'rr') {
             updateDiagnostics(document, diagnosticCollection);
@@ -201,10 +327,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }, null, context.subscriptions);
 
-
+    let disposableHelloWorld = vscode.commands.registerCommand('risa-enhancers.helloWorld', () => {
+        vscode.window.showInformationMessage('Hello VS Code from Risa Enhancers!');
+    });
+    context.subscriptions.push(disposableHelloWorld);
 }
 
-// コード診断の関数
+// コード診断の関数 
 function updateDiagnostics(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection): void {
     if (document.languageId !== 'rr') {
         return;
@@ -224,7 +353,6 @@ function updateDiagnostics(document: vscode.TextDocument, diagnosticCollection: 
         }
     }
 
-    // 簡単な不一致チェック
     if (openBrackets['('] !== closeBrackets[')']) {
         const diagnostic = new vscode.Diagnostic(
             new vscode.Range(document.positionAt(text.length), document.positionAt(text.length)),
@@ -253,7 +381,8 @@ function updateDiagnostics(document: vscode.TextDocument, diagnosticCollection: 
     diagnosticCollection.set(document.uri, diagnostics);
 }
 
-// このメソッドは、拡張機能が無効化されたときに呼び出されます。
 export function deactivate() {
-    // クリーンアップ処理などが必要な場合に記述します。
+    if (asirModeStatusBarItem){
+        asirModeStatusBarItem.dispose();  // 拡張機能終了時にアイテムを解法
+    }
 }
