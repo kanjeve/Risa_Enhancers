@@ -1,6 +1,6 @@
-# risa-enhancers README
+# Risa-Enhancers 
 
-This is the README for your extension "risa-enhancers". After writing up a brief description, we recommend including the following sections.
+これはVScodeでRisa/Asirのコードを書くための拡張機能 "risa-enhancers"です。
 
 ## 機能
 

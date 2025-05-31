@@ -40,7 +40,49 @@
     "commands": [ {
       "command": "risa-enhancers.helloWorld",
       "title": "Hello VS Code from Risa Enhancers!"
+    },{
+      "command": "risa_enhancers.executeCode",
+      "title": "Risa/Asir: Execute Code",
+      "icon": {
+        "light": "resources/light/play.svg",
+        "dark": "resources/dark/play.svg"
+      }
     }],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "risa_enhancers.executeCode",
+          "group": "group1"
+        }
+      ],
+      "editor/title": [
+        {
+          "when": "resourceLangId == rr",
+          "command": "risa_enhancers.executeCode",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "configuration": { 
+      "title": "Risa/Asir Executor Configuration",
+      "properties": {
+        "risaasirExecutor.asirPathWindows": {
+          "type": "string",
+          "default": "C:\\Program Files\\asir\\bin\\asir.exe", 
+          "description": "Path to the Risa/Asir executable on Windows."
+        },
+        "risaasirExecutor.asirPathLinux": {
+          "type": "string",
+          "default": "/usr/bin/asir", 
+          "description": "Path to the Risa/Asir executable on Linux (e.g., in WSL)."
+        },
+        "risaasirExecutor.asirPathMac": {
+          "type": "string",
+          "default": "/Applications/asir.app/Contents/MacOS/asir", 
+          "description": "Path to the Risa/Asir executable on macOS."
+        }
+      }
+    },
     "completionProviders": [ {
       "language": "rr", 
       "selector": [
@@ -53,6 +95,14 @@
         "uiTheme": "vs", 
         "path": "./themes/asir-custom-theme.json"
     }]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": { 
         "@types/vscode": "^1.100.0", 
