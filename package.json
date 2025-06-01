@@ -1,8 +1,8 @@
 {
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
-  "description": "",
-  "version": "0.1.1",
+  "description": "Enhance your computation for Risa/Asir! ",
+  "version": "0.1.2",
   "publisher": "",
   "repository": {},
   "bugs": {},
@@ -16,10 +16,7 @@
     "vscode": "^1.100.0"
   },
   "categories": [
-    "Programming Languages",
-    "Snippets",
-    "Themes",
-    "Linters"
+    "Other"
   ],
   "contributes": {
     "languages": [{
@@ -47,6 +44,13 @@
         "light": "resources/light/play.svg",
         "dark": "resources/dark/play.svg"
       }
+    },{
+      "command": "risa_enhancers.cancelExecution",
+      "title": "Risa/Asir: Cancel Current Execution",
+      "icon": "resources/other/coffe.svg"
+    },{
+      "command": "risa_enhancers.switchExecutionMode",
+      "title": "Risa/Asir: switch Execution Mode"
     }],
     "menus": {
       "editor/context": [
@@ -60,6 +64,10 @@
           "when": "resourceLangId == rr",
           "command": "risa_enhancers.executeCode",
           "group": "navigation@1"
+        },{
+          "when": "resourceLangId == rr",
+          "command": "risa_enhancers.cancelExecution",
+          "group": "navigation@2"
         }
       ]
     },
@@ -106,7 +114,14 @@
         "label": "Asir Custom Theme",
         "uiTheme": "vs", 
         "path": "./themes/asir-custom-theme.json"
-    }]
+    }],
+    "keybindings":[
+      {
+        "command": "risa_enhancers.executeCode",
+        "key": "shift+enter",
+        "when": "editorTextFocus && resourceExtname == .rr"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
