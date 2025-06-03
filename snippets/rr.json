@@ -1,0 +1,2790 @@
+{
+    "ACCESS": {
+        "prefix": "access",
+        "body": [
+            "access (\"${1:file}\");"
+        ],
+        "description": ["ファイルの存在を確認する。",
+            "ファイル名は'./hoge.rr'のように記述する。",
+            "存在すれば1を、しなければ2を返す。"
+        ]
+    },
+    "AF": {
+        "prefix": "af",
+        "body": [
+            "af(${1:monic},[${2:rootlist}]);"
+        ],
+        "description": ["代数体上の1変数多項式の因数分解",
+            "'monic'に'rootlist'にある代数的数を係数に持つ1変数のモニック多項式",
+            "'rootlist'に代数的数のリストを記述する。",
+            "'newalg'も参照。",
+            "[因子,重複度]が返却される。"
+        ]
+    },
+    "AF_NOALG": {
+        "prefix": "af_noalg",
+        "body": [
+            "af_noalg(${1:monic},[[${2:alglist}]]);"
+        ],
+        "description":[
+            "代数体上の1変数多項式の因数分解",
+            "'monic'に'alglist'にある代数的数を係数に持つ1変数のモニック多項式",
+            "'alglist'に不定元と多項式のリストを記述する。",
+            "[因子,重複度]が返却される。"
+        ]
+    },
+    "ALG": {
+        "prefix": "alg",
+        "body": [
+            "alg(${1:integer});"
+        ],
+        "description":[
+            "代数的数",
+            "alg(n)でn番目に定義した代数的数を#nの形で返す。"
+        ]
+    },
+    "ALGPLTORAT": {
+        "prefix": "algptorat",
+        "body": [
+            "algptorat(${1:poly});"
+        ],
+        "description":[
+            "多項式を入力し、多項式中にあるalg(n)などを#nの形に直して返す。"
+        ]
+    },
+    "ALGTODALG": {
+        "prefix": "algtodalg",
+        "body": [
+            "algtodalg(${1:poly});"
+        ],
+        "description":[
+            "多項式を入力し、多項式にある代数的数を<<n,m>>のような形に変換する。",
+            "<<n,m>>は#0がn乗、#1がm乗を表している。（#0,#1とは限らない。）",
+            "事前に'set_field'を使って代数体を基礎体に設定する必要がある。"
+        ]
+    },
+    "ALGV": {
+        "prefix": "algv",
+        "body": [
+            "algv(${1:integer});"
+        ],
+        "description":[
+            "algv(n)でn番目に定義した代数的数をt#nの形で返す。"
+        ]
+    },
+    "ANN": {
+        "prefix": "ann",
+        "body": [
+            "ann(${1:poly});"
+        ],
+        "description":[
+            "ann(f)でf^sの零化イデアル(annlihilator ideal)の生成系を返す。",
+            "[fのb関数の最小整数根,sにaを代入したもの]",
+            "Weyl代数を参照。",
+            "load(\"bfct\")が必須。"
+        ]
+    },
+    "ANN0": {
+        "prefix": "ann0",
+        "body": [
+            "ann0(${1:poly});"
+        ],
+        "description":[
+            "ann(f)でf^sの零化イデアル(annlihilator ideal)の生成系を返す。",
+            "[-1,[fのb関数の最小整数根,sにaを代入したもの]]",
+            "Weyl代数を参照。",
+            "load(\"bfct\")が必須。"
+        ]
+    },
+    "APPEND": {
+        "prefix": "append",
+        "body": [
+            "append(${1:list},${2:list});"
+        ],
+        "description":[
+            "2つのリストをその順で結合した1つのリストを返す。\n",
+            "例：append([a,b],[c,d]) -> [a,b,c,d]",
+            "3つ以上は非対応"
+        ]
+    },
+    "ARFLEG": {
+        "prefix": "arfleg",
+        "body": [
+            "arfleg(\"${1:name}\",${2:add},${3:sub},${4:mul},${5:div},${6:pwr},${7:chsgn},${8:comp});"
+        ],
+        "description":[
+            "構造体に関する基本演算を定義する。",
+            "nameには名前を、それ以外にはすでに定義した関数を入力する。登録したくない場合は0を入力する。",
+            "詳細は公式マニュアルを参照。"
+        ]
+    },
+    "ARGS": {
+        "prefix": "args",
+        "body": [
+            "args(${1:function});"
+        ],
+        "description":[
+            "関数の引数をリストで返す。\n",
+            "例：args(sin(x)) -> [x]"
+        ]
+    },
+    "ASCIITOSTR": {
+        "prefix": "asciitostr",
+        "body": [
+            "asciitostr([${1:integer}]);"
+        ],
+        "description":[
+            "アスキー(ascii)コードの列を文字に変換する。\n",
+            "例：asciitostr([94,95,94]) -> ^_^"
+        ]
+    },
+    "ASQ": {
+        "prefix": "asq",
+        "body": [
+            "asq(${1:poly});"
+        ],
+        "description":[
+            "代数体上の無平方分解",
+            "[因子,重複度]が返却される。"
+        ]
+    },
+    "BFCT": {
+        "prefix": "bfct",
+        "body": [
+            "bfct(${1:poly});"
+        ],
+        "description":[]
+    },
+    "BFUNCTON": {
+        "prefix": "bfunction",
+        "body": [
+            "bfunction(${1:poly});"
+        ],
+        "description":[]
+    },
+    "BLOAD": {
+        "prefix": "bload",
+        "body": [
+            "bload(\"${1:file}\");"
+        ],
+        "description":[]
+    },
+    "BLOAD27": {
+        "prefix": "bload27",
+        "body": [
+            "bload27(\"${1:file}\");"
+        ],
+        "description":[]
+    },
+    "BSAVE": {
+        "prefix": "bsave",
+        "body": [
+            "bsave(${1:obj},\"${2:file}\");"
+        ],
+        "description":[]
+    },
+    "CALL": {
+        "prefix": "call",
+        "body": [
+            "bload(${1:function},${2:list});"
+        ],
+        "description":[]
+    },
+    "CAR": {
+        "prefix": "car",
+        "body": [
+            "car(${1:list});"
+        ],
+        "description":[]
+    },
+    "CDR": {
+        "prefix": "cdr",
+        "body": [
+            "cdr(${1:list});"
+        ],
+        "description":[]
+    },
+    "CEIR": {
+        "prefix": "ceir",
+        "body": [
+            "ceir(${1:float});"
+        ],
+        "description":[]
+    },
+    "CHARACTERISTIC_FF": {
+        "prefix": "characteristic_ff",
+        "body": [
+            "characteristic_ff();"
+        ],
+        "description":[]
+    },
+    "CLEAR_CANVAS": {
+        "prefix": "clear_canvas",
+        "body": [
+            "clear_canvas(${1:id},${2:index});"
+        ],
+        "description":[]
+    },
+    "CLOSE_FILE": {
+        "prefix": "close_file",
+        "body": [
+            "close_file(${1:id});"
+        ],
+        "description":[]
+    },
+    "COEF": {
+        "prefix": "bload",
+        "body": [
+            "bload(${1:poly},${2:integer},${3:var});"
+        ],
+        "description":[]
+    },
+    "COLA": {
+        "prefix": "cola",
+        "body": [
+            "cola(${1:matrix},${2:integer},$3);"
+        ],
+        "description":[]
+    },
+    "COLM": {
+        "prefix": "colm",
+        "body": [
+            "colm(${1:matrix},${2:integer},$3);"
+        ],
+        "description":[]
+    },
+    "COLX": {
+        "prefix": "colx",
+        "body": [
+            "colx(${1:matrix},${2:integer},$3);"
+        ],
+        "description":[]
+    },
+    "CONJ": {
+        "prefix": "conj",
+        "body": [
+            "conj(${1:complex});"
+        ],
+        "description":[]
+    },
+    "CONPLOT": {
+        "prefix": "conplot",
+        "body": [
+            "conplot(${1:function},${2:geometry},${3:xrange},${4:yrange},${5:zrange},${6:id},${7:name});"
+        ],
+        "description":["2以降は書かなくても良い"]
+    },
+    "CONS": {
+        "prefix": "cons",
+        "body": [
+            "cons(${1:obj},${2:list});"
+        ],
+        "description":[]
+    },
+    "CPUTIME": {
+        "prefix": "cputime",
+        "body": [
+            "cputime(${1|0,1|});"
+        ],
+        "description":[]
+    },
+    "CR_GCDA": {
+        "prefix": "cr_gcda",
+        "body": [
+            "cr_gcda(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "CTRL0": {
+        "prefix": "ctrl",
+        "body": [
+            "ctrl();"
+        ],
+        "description":[]
+    },
+    "CTRL1": {
+        "prefix": "ctrl",
+        "body": [
+            "ctrl(|desc=1);"
+        ],
+        "description":[]
+    },
+    "CTRL2": {
+        "prefix": "ctrl",
+        "body": [
+            "ctrl(\"${1:switch}\",${2:obj});"
+        ],
+        "description":[]
+    },
+    "CURRENTTIME": {
+        "prefix": "currenttime",
+        "body": [
+            "currenttime();"
+        ],
+        "description":["1970年1月1日0時0分0秒から現在までの経過秒数"]
+    },
+    "CYCLIC": {
+        "prefix": "cyclic",
+        "body": [
+            "cyclic(${1:integer});"
+        ],
+        "description":[]
+    },
+    "DABS": {
+        "prefix": "dabs",
+        "body": [
+            "dabs(${1:complex});"
+        ],
+        "description":[]
+    },
+    "DACOS": {
+        "prefix": "dacos",
+        "body": [
+            "cyclic(${1:float});"
+        ],
+        "description":["Arccos"]
+    },
+    "DALGTOALG": {
+        "prefix": "dalgtoalg",
+        "body": [
+            "dalgtoalg(${1:dalg});"
+        ],
+        "description":[]
+    },
+    "DALGTODP": {
+        "prefix": "dalgtodp",
+        "body": [
+            "dalgtodp(${1:dalg});"
+        ],
+        "description":[]
+    },
+    "DASIN": {
+        "prefix": "dasin",
+        "body": [
+            "dasin(${1:float});"
+        ],
+        "description":["Arcsin"]
+    },
+    "DATAN": {
+        "prefix": "datan",
+        "body": [
+            "datan(${1:float});"
+        ],
+        "description":["Arctan"]
+    },
+    "DCEIL": {
+        "prefix": "dceil",
+        "body": [
+            "dceil(${1:float});"
+        ],
+        "description":["ceil"]
+    },
+    "DCOS": {
+        "prefix": "dcos",
+        "body": [
+            "dcos(${1:float});"
+        ],
+        "description":["cos"]
+    },
+    "DEBUG": {
+        "prefix": "debug",
+        "body": [
+            "debug$"
+        ],
+        "description":[]
+    },
+    "DEFPOLY": {
+        "prefix": "defpoly",
+        "body": [
+            "defpoly(${1:alg});"
+        ],
+        "description":[]
+    },
+    "DEFPOLY_MOD2": {
+        "prefix": "defpoly_mod2",
+        "body": [
+            "defpoly_mod2(${1:integer});"
+        ],
+        "description":["load(\"fff\")が必須。"]
+    },
+    "DEG": {
+        "prefix": "deg",
+        "body": [
+            "deg(${1:poly},${2;var});"
+        ],
+        "description":[]
+    },
+    "DELETE_HISTORY": {
+        "prefix": "delete_history",
+        "body": [
+            "delete_history(${1:integer});"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "DET": {
+        "prefix": "det",
+        "body": [
+            "det(${1:matrix},${2:prime});"
+        ],
+        "description":["primeは省略可"]
+    },
+    "DEVAL": {
+        "prefix": "deval",
+        "body": [
+            "deval(${1:obj});"
+        ],
+        "description":[]
+    },
+    "DEXP": {
+        "prefix": "dexp",
+        "body": [
+            "dexp(${1:float});"
+        ],
+        "description":[]
+    },
+    "DFLOOR": {
+        "prefix": "dfloor",
+        "body": [
+            "dfloor(${1:float});"
+        ],
+        "description":["floor"]
+    },
+    "DGR": {
+        "prefix": "dgr",
+        "body": [
+            "dgr(${1:polylist},${2:varlist},${3:order},${4:procs);"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DIFF": {
+        "prefix": "diff",
+        "body": [
+            "diff(${1:function},${2:var});"
+        ],
+        "description":["varにはリストも使える。"]
+    },
+    "DLOG": {
+        "prefix": "dlog",
+        "body": [
+            "dlog(${1:float});"
+        ],
+        "description":[]
+    },
+    "DN": {
+        "prefix": "dn",
+        "body": [
+            "dn(${1:rat});"
+        ],
+        "description":[]
+    },
+    "DPM_DPTODPM": {
+        "prefix": "dpm_dptodpm",
+        "body": [
+            "dpm_dptodpm(${1:dpoly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "DPM_DTOL": {
+        "prefix": "dpm_dtol",
+        "body": [
+            "dpm_dtol(${1:dpoly},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "DPM_HC": {
+        "prefix": "dpm_hc",
+        "body": [
+            "dpm_hc(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_HM": {
+        "prefix": "dpm_hm",
+        "body": [
+            "dpm_hm(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_HP": {
+        "prefix": "dpm_hp",
+        "body": [
+            "dpm_hp(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_HT": {
+        "prefix": "dpm_ht",
+        "body": [
+            "dpm_ht(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_LTOD": {
+        "prefix": "dpm_ltod",
+        "body": [
+            "dpm_ltod(${1:polylist},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "DPM_NF": {
+        "prefix": "dpm_nf",
+        "body": [
+            "dpm_nf(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|});"
+        ],
+        "description":["indexlistは省略可"]
+    },
+    "DPM_NF_AND_QUOTIENT": {
+        "prefix": "dpm_nf_and_quotient",
+        "body": [
+            "dpm_nf_and_quotient(${1:indexlist},${2:dpoly},${3:dpolyarray});"
+        ],
+        "description":["indexlistは省略可"]
+    },
+    "DPM_REDBLE": {
+        "prefix": "dpm_redble",
+        "body": [
+            "dpm_redble(${1:dpoly},${2:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_REST": {
+        "prefix": "dpm_rest",
+        "body": [
+            "dpm_rest(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DPM_SCHREYER_BASE": {
+        "prefix": "dpm_schreyer_base",
+        "body": [
+            "dpm_schreyer_base(${1:dpolylist});"
+        ],
+        "description":[]
+    },
+    "DPM_SCHREYER_FRAME": {
+        "prefix": "dpm_schreyer_frame",
+        "body": [
+            "dpm_schreyer_frame(${1:dpolylist});"
+        ],
+        "description":[]
+    },
+    "DPM_SET_SCHREYER_LEVEL": {
+        "prefix": "dpm_set_schreyer_level",
+        "body": [
+            "dpm_set_schreyer_level(${1:integer});"
+        ],
+        "description":[]
+    },
+    "DPM_SP": {
+        "prefix": "dpm_sp",
+        "body": [
+            "dpm_sp(${1:dpoly},${2:dpoly},|coef=1|);"
+        ],
+        "description":["|coef=1|は省略可"]
+    },
+    "DPM_SP_NF": {
+        "prefix": "dpm_sp_nf",
+        "body": [
+            "dpm_sp_nf(${1:C},${2:Z},${3:P},${4:Q});"
+        ],
+        "description":[]
+    },
+    "DPTOALG": {
+        "prefix": "dptoalg",
+        "body": [
+            "dptoalg(${1:dp});"
+        ],
+        "description":[]
+    },
+    "DP_DEHOMO": {
+        "prefix": "dp_dehomo",
+        "body": [
+            "dp_dehomo(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_DTOP": {
+        "prefix": "dp_dtop",
+        "body": [
+            "dp_dehomo(${1:dpoly},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "DP_ETOV": {
+        "prefix": "dp_etov",
+        "body": [
+            "dp_etov(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_F4_MAIN": {
+        "prefix": "dp_f4_main",
+        "body": [
+            "dp_f4_main(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":[]
+    },
+    "DP_F4_MOD_MAIN": {
+        "prefix": "dp_f4_mod_main",
+        "body": [
+            "dp_f4_mod_main(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":[]
+    },
+    "DP_GR_FLAGS": {
+        "prefix": "dp_gr_flags",
+        "body": [
+            "dp_gr_flags(${1:list});"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "DP_GR_F_MAIN": {
+        "prefix": "dp_gr_f_main",
+        "body": [
+            "dp_gr_f_main(${1:polylist},${2:varlist},${3|0,1|},${4:order});"
+        ],
+        "description":[]
+    },
+    "DP_GR_MAIN": {
+        "prefix": "dp_gr_f_main",
+        "body": [
+            "dp_gr_f_main(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "DP_GR_MOD_MAIN": {
+        "prefix": "dp_gr_mod_main",
+        "body": [
+            "dp_gr_mod_main(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "DP_GR_PRINT": {
+        "prefix": "dp_gr_print",
+        "body": [
+            "dp_gr_print(${1:integer});"
+        ],
+        "description":[]
+    },
+    "DP_HC": {
+        "prefix": "dp_hc",
+        "body": [
+            "dp_hc(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_HM": {
+        "prefix": "dp_hm",
+        "body": [
+            "dp_hm(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_HOMO": {
+        "prefix": "dp_homo",
+        "body": [
+            "dp_homo(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_HT": {
+        "prefix": "dp_ht",
+        "body": [
+            "dp_ht(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_LCM": {
+        "prefix": "dp_lcm",
+        "body": [
+            "dp_lcm(${1:dpoly},${2:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_MAG": {
+        "prefix": "dp_mag",
+        "body": [
+            "dp_mag(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_MBASE": {
+        "prefix": "dp_mbase",
+        "body": [
+            "dp_mbase(${1:dpolylist});"
+        ],
+        "description":[]
+    },
+    "DP_MOD": {
+        "prefix": "dp_mod",
+        "body": [
+            "dp_mod(${1:dpoly},${2:prime},${3:list});"
+        ],
+        "description":[]
+    },
+    "DP_NF": {
+        "prefix": "dp_nf",
+        "body": [
+            "dp_nf(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_NF_MOD": {
+        "prefix": "dp_nf_mod",
+        "body": [
+            "dp_nf_mod(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|},${5:prime});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_ORD": {
+        "prefix": "dp_ord",
+        "body": [
+            "dp_ord(${1:order});"
+        ],
+        "description":[]
+    },
+    "DP_PRIM": {
+        "prefix": "dp_prim",
+        "body": [
+            "dp_prim(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_PTOD": {
+        "prefix": "dp_ptod",
+        "body": [
+            "dp_ptod(${1:poly},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "DP_PTOZP": {
+        "prefix": "dp_ptozp",
+        "body": [
+            "dp_ptozp(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_RAT": {
+        "prefix": "dp_rat",
+        "body": [
+            "dp_rat(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_RED": {
+        "prefix": "dp_red",
+        "body": [
+            "dp_red(${1:dpoly},${2:dpoly},${3:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_REDBLE": {
+        "prefix": "dp_redble",
+        "body": [
+            "dp_redble(${1:dpoly},${2:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_RED_MOD": {
+        "prefix": "dp_red_mod",
+        "body": [
+            "dp_red_mod(${1:dpoly},${2:dpoly},${3:dpoly},${4:prime});"
+        ],
+        "description":[]
+    },
+    "DP_REST": {
+        "prefix": "dp_rest",
+        "body": [
+            "dp_rest(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_SET_TOP_WEIGHT": {
+        "prefix": "dp_set_top_weight",
+        "body": [
+            "dp_set_top_weight(${1:weight});"
+        ],
+        "description":[]
+    },
+    "DP_SET_WEIGHT": {
+        "prefix": "dp_set_weight",
+        "body": [
+            "dp_set_weight(${1:weight});"
+        ],
+        "description":[]
+    },
+    "DP_SP": {
+        "prefix": "dp_sp",
+        "body": [
+            "dp_sp(${1:dpoly},${2:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_SP_MOD": {
+        "prefix": "dp_sp_mod",
+        "body": [
+            "dp_sp_mod(${1:dpoly},${2:dpoly},${3:prime});"
+        ],
+        "description":[]
+    },
+    "DP_SUBD": {
+        "prefix": "dp_subd",
+        "body": [
+            "dp_subd(${1:dpoly},${2:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_SUGAR": {
+        "prefix": "dp_sugar",
+        "body": [
+            "dp_sugar(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_TD": {
+        "prefix": "dp_td",
+        "body": [
+            "dp_td(${1:dpoly});"
+        ],
+        "description":[]
+    },
+    "DP_TRUE_NF": {
+        "prefix": "dp_true_nf",
+        "body": [
+            "dp_true_nf(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_TRUE_NF_MOD": {
+        "prefix": "dp_true_nf_mod",
+        "body": [
+            "dp_true_nf_mod(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|},${5:prime});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_VTOE": {
+        "prefix": "dp_vtoe",
+        "body": [
+            "dp_vtoe(${1:vector});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_F4_MAIN": {
+        "prefix": "dp_weyl_f4_main",
+        "body": [
+            "dp_weyl_f4_main(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_F4_MOD_MAIN": {
+        "prefix": "dp_weyl_f4_main",
+        "body": [
+            "dp_weyl_f4_main(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_GR_F_MAIN": {
+        "prefix": "dp_weyl_gr_f_main",
+        "body": [
+            "dp_weyl_gr_f_main(${1:polylist},${2:varlist},${3|0,1|},${4:order});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_GR_MAIN": {
+        "prefix": "dp_weyl_gr_main",
+        "body": [
+            "dp_weyl_gr_main(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_GR_MOD_MAIN": {
+        "prefix": "dp_weyl_gr_mod_main",
+        "body": [
+            "dp_weyl_gr_mod_main(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "DP_WEYL_NF": {
+        "prefix": "dp_weyl_nf",
+        "body": [
+            "dp_weyl_nf(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_WEYL_NF_MOD": {
+        "prefix": "dp_weyl_nf_mod",
+        "body": [
+            "dp_weyl_nf_mod(${1:indexlist},${2:dpoly},${3:dpolyarray},${4|0,1|},${5:prime});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "DP_WEYL_SET_WEIGHT": {
+        "prefix": "dp_weyl_set_weight",
+        "body": [
+            "dp_weyl_set_weight(${1:weight});"
+        ],
+        "description":[]
+    },
+    "DRAW_OBJ": {
+        "prefix": "draw_obj",
+        "body": [
+            "draw_obj(${1:id},${2:index},${3:pointorsegment});"
+        ],
+        "description":["engine"]
+    },
+    "DRAW_STRING": {
+        "prefix": "draw_string",
+        "body": [
+            "draw_string(${1:id},${2:index},[${3:x},${4:y}],${5:string});"
+        ],
+        "description":["engine"]
+    },
+    "DRINT": {
+        "prefix": "drint",
+        "body": [
+            "drint(${1:float});"
+        ],
+        "description":[]
+    },
+    "DSIN": {
+        "prefix": "dsin",
+        "body": [
+            "dsin(${1:float});"
+        ],
+        "description":[]
+    },
+    "DSQRT": {
+        "prefix": "dsqrt",
+        "body": [
+            "dsqrt(${1:complex});"
+        ],
+        "description":[]
+    },
+    "DTAN": {
+        "prefix": "dtan",
+        "body": [
+            "dtan(${1:float});"
+        ],
+        "description":[]
+    },
+    "ECM_ADD_FF": {
+        "prefix": "ecm_add_ff",
+        "body": [
+            "ecm_add_ff(${1:vector},${2:vector},${3:vector});"
+        ],
+        "description":[]
+    },
+    "ECM_CHSGN_FF": {
+        "prefix": "ecm_chsgn_ff",
+        "body": [
+            "ecm_chsgn_ff(${1:vector});"
+        ],
+        "description":[]
+    },
+    "ECM_SUB_FF": {
+        "prefix": "ecm_sub_ff",
+        "body": [
+            "ecm_sub_ff(${1:vector},${2:vector},${3:vector});"
+        ],
+        "description":[]
+    },
+    "EDIFF": {
+        "prefix": "ediff",
+        "body": [
+            "ediff(${1:poly},${2:var});"
+        ],
+        "description":[]
+    },
+    "END": {
+        "prefix": "end",
+        "body": [
+            "end$"
+        ],
+        "description":[]
+    },
+    "ERROR": {
+        "prefix": "error",
+        "body": [
+            "error(${1:message});"
+        ],
+        "description":[]
+    },
+    "EVAL": {
+        "prefix": "eval",
+        "body": [
+            "eval(${1:obj},${2:integer});"
+        ],
+        "description":["integerは計算する桁数を表す。省略可能。"]
+    },
+    "EVAL_STR": {
+        "prefix": "eval_str",
+        "body": [
+            "eval_str(${1:string});"
+        ],
+        "description":[]
+    },
+    "EXTDEG_FF": {
+        "prefix": "extdeg_ff",
+        "body": [
+            "extdeg_ff();"
+        ],
+        "description":[]
+    },
+    "FAC": {
+        "prefix": "fac",
+        "body": [
+            "fac(${1:integer});"
+        ],
+        "description":[]
+    },
+    "FCTR": {
+        "prefix": "fctr",
+        "body": [
+            "fctr(${1:poly});"
+        ],
+        "description":[]
+    },
+    "FCTR_FF": {
+        "prefix": "fctr_ff",
+        "body": [
+            "fctr_ff(${1:poly});"
+        ],
+        "description":["load(\"fff\")が必須。"]
+    },
+    "FIELD_ORDER_FF": {
+        "prefix": "field_order_ff",
+        "body": [
+            "field_order_ff();"
+        ],
+        "description":[]
+    },
+    "FIELD_TYPE_FF": {
+        "prefix": "field_type_ff",
+        "body": [
+            "field_type_ff();"
+        ],
+        "description":[]
+    },
+    "FLIST": {
+        "prefix": "flist",
+        "body": [
+            "flist(\"${1:modelename}\");"
+        ],
+        "description":["modulenameは省略可"]
+    },
+    "FLOOR": {
+        "prefix": "floor",
+        "body": [
+            "floor(${1:float});"
+        ],
+        "description":[]
+    },
+    "FUNARGS": {
+        "prefix": "funargs",
+        "body": [
+            "funargs(${1:function});"
+        ],
+        "description":[]
+    },
+    "FUNCTOR": {
+        "prefix": "functor",
+        "body": [
+            "functor(${1:function});"
+        ],
+        "description":[]
+    },
+    "GB_COMP": {
+        "prefix": "gb_comp",
+        "body": [
+            "gb_comp(${1:polylist},${2:polylist});"
+        ],
+        "description":[]
+    },
+    "GCD": {
+        "prefix": "gcd",
+        "body": [
+            "gcd(${1:poly},${2:poly},${3:prime});"
+        ],
+        "description":["primeは省略可"]
+    },
+    "GCDZ": {
+        "prefix": "gcdz",
+        "body": [
+            "gcdz(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "GENERATE_PORT": {
+        "prefix": "generate_port",
+        "body": [
+            "generate_port(${1|0,1|});"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "GENERIC_BFCT": {
+        "prefix": "generic_bfct",
+        "body": [
+            "generic_bfct(${1:polylist},${2:varlist},${3:dvarlist},${4:weight});"
+        ],
+        "description":[]
+    },
+    "GETOPT": {
+        "prefix": "getopt",
+        "body": [
+            "getpot(${1:key});"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "GET_BYTE": {
+        "prefix": "get_byte",
+        "body": [
+            "get_byte(${1:integer});"
+        ],
+        "description":[]
+    },
+    "GET_LINE": {
+        "prefix": "get_line",
+        "body": [
+            "get_line(${1:integer});"
+        ],
+        "description":[]
+    },
+    "GET_ROOTDIR": {
+        "prefix": "get_rootdir",
+        "body": [
+            "get_rootdir();"
+        ],
+        "description":[]
+    },
+    "GF2NTON": {
+        "prefix": "gf2nton",
+        "body": [
+            "gf2nton(${1:poly});"
+        ],
+        "description":[]
+    },
+    "GF2NTOP": {
+        "prefix": "gf2ntop",
+        "body": [
+            "gf2ntop(${1:poly},${2:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "GR": {
+        "prefix": "gr",
+        "body": [
+            "gr(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "GR_MINIPOLY": {
+        "prefix": "gr_minipoly",
+        "body": [
+            "gr_minipoly(${1:polylist},${2:varlist},${3:order},${4:poly},${5:var},${6|0,1|});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "GR_MOD": {
+        "prefix": "gr_mod",
+        "body": [
+            "gr_mod(${1:polylist},${2:varlist},${3:order},${4:prime});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "HCYCLIC": {
+        "prefix": "hcyclic",
+        "body": [
+            "hcyclic(${1:integer});"
+        ],
+        "description":[]
+    },
+    "HEAP": {
+        "prefix": "heap",
+        "body": [
+            "heap();"
+        ],
+        "description":[]
+    },
+    "HELP": {
+        "prefix": "help",
+        "body": [
+            "help(\"${1:function}\");"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "HGR": {
+        "prefix": "hgr",
+        "body": [
+            "hgr(${1:polylist},${2:varlist},${3:order});"
+        ],
+        "description":["load(\"gr\")が必須。"]
+    },
+    "HKATSURA": {
+        "prefix": "hkatsura",
+        "body": [
+            "hkatsura(${1:integer});"
+        ],
+        "description":[]
+    },
+    "IAND": {
+        "prefix": "iand",
+        "body": [
+            "iand(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "IDIV": {
+        "prefix": "idiv",
+        "body": [
+            "idiv(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "IFPLOT": {
+        "prefix": "ifplot",
+        "body": [
+            "ifplot(${1:function},${2:geometry},${3:xrange},${4:yrange},${5:integer},${6:name});"
+        ],
+        "description":[]
+    },
+    "IGCD": {
+        "prefix": "igcd",
+        "body": [
+            "igcd(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "IGCDCNTL": {
+        "prefix": "igcdcntl",
+        "body": [
+            "igcdcntl(${1|0,1,2,3|});"
+        ],
+        "description":[]
+    },
+    "ILCM": {
+        "prefix": "ilcm",
+        "body": [
+            "ilcm(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    }, 
+    "INT32TON": {
+        "prefix": "int32ton",
+        "body": [
+            "int32ton(${1:32bit});"
+        ],
+        "description":[]
+    },
+    "INTTORAT": {
+        "prefix": "inttorat",
+        "body": [
+            "inttorat(${1:integer},${2:integer},${3:integer});"
+        ],
+        "description":[]
+    },
+    "INV": {
+        "prefix": "inv",
+        "body": [
+            "inv(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "INVMAT": {
+        "prefix": "invmat",
+        "body": [
+            "invmat(${1:matrix});"
+        ],
+        "description":[]
+    },
+    "IOR": {
+        "prefix": "ior",
+        "body": [
+            "ior(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "IREM": {
+        "prefix": "irem",
+        "body": [
+            "irem(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },  
+    "IRREDCHECK_FF": {
+        "prefix": "irredcheck_ff",
+        "body": [
+            "irredcheck_ff(${1:poly});"
+        ],
+        "description":["load(\"fff\")が必須。"]
+    },
+    "ISHIFT": {
+        "prefix": "ishift",
+        "body": [
+            "ishift(${1:integer});"
+        ],
+        "description":[]
+    },
+    "ISQRT": {
+        "prefix": "isqrt",
+        "body": [
+            "isqrt(${1:integer});"
+        ],
+        "description":[]
+    },  
+    "IXOR": {
+        "prefix": "ixor",
+        "body": [
+            "ixor(${1:integer},${2:integer});"
+        ],
+        "description":[]
+    },
+    "KATSURA": {
+        "prefix": "katsura",
+        "body": [
+            "katsura(${1:integer});"
+        ],
+        "description":[]
+    },
+    "KMUL": {
+        "prefix": "kmul",
+        "body": [
+            "kmul(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "KSQUARE": {
+        "prefix": "ksquare",
+        "body": [
+            "ksquare(${1:poly});"
+        ],
+        "description":[]
+    },
+    "KTMUL": {
+        "prefix": "ktmul",
+        "body": [
+            "ktmul(${1:poly},${2:poly},${3:integer});"
+        ],
+        "description":[]
+    },
+    "LENGTH": {
+        "prefix": "length",
+        "body": [
+            "length(${1:list});"
+        ],
+        "description":["vectorも彁"]
+    },
+    "LEX_HENSEL": {
+        "prefix": "lex_hensel",
+        "body": [
+            "lex_hensel(${1:polylist},${2:varlist},${3:order},${4:varlist},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "LEX_HENSEL_GSL": {
+        "prefix": "lex_hensel_gsl",
+        "body": [
+            "lex_hensel_gsl(${1:polylist},${2:varlist},${3:order},${4:varlist},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "LEX_TL": {
+        "prefix": "lex_tl",
+        "body": [
+            "lex_tl(${1:polylist},${2:varlist},${3:order},${4:varlist},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "LMPTOP": {
+        "prefix": "lmptop",
+        "body": [
+            "lmptop(${1:GFpoly});"
+        ],
+        "description":[]
+    },
+    "LOAD": {
+        "prefix": "load",
+        "body": [
+            "load(\"${1:filename}\");"
+        ],
+        "description":[]
+    },
+    "LPRIME": {
+        "prefix": "lprime",
+        "body": [
+            "lprime(${1:integer});"
+        ],
+        "description":["0~998まで"]
+    },
+    "LRANDOM": {
+        "prefix": "lrandom",
+        "body": [
+            "lrandom(${1:integer});"
+        ],
+        "description":[]
+    },
+    "LTOV": {
+        "prefix": "ltov",
+        "body": [
+            "ltov(${1:list});"
+        ],
+        "description":[]
+    },
+    "MAP": {
+        "prefix": "map",
+        "body": [
+        "map(${1:function},${2:list});"
+        ],
+        "description":["listはvector,matrixでも彁"]
+    },
+    "MAT": {
+        "prefix": "mat",
+        "body": [
+        "mat(${1:vector});"
+        ],
+        "description":[]
+    },
+    "MATC": {
+        "prefix": "matc",
+        "body": [
+        "matc(${1:vector});"
+        ],
+        "description":[]
+    },
+    "MATR": {
+        "prefix": "matr",
+        "body": [
+        "matr(${1:vector});"
+        ],
+        "description":[]
+    },
+    "MATRIX": {
+        "prefix": "matrix",
+        "body": [
+        "matrix(${1:integer},${2:integer},${3:elements});"
+        ],
+        "description":[]
+    },
+    "MINDEG": {
+        "prefix": "mindeg",
+        "body": [
+        "mindeg(${1:pory},${2:var});"
+        ],
+        "description":[]
+    },
+    "MINIPOLY": {
+        "prefix": "minipoly",
+        "body": [
+        "minipoly(${1:polylist},${2:varlist},${3:order},${4:poly},${5:var});"
+        ],
+        "description":[]
+    },
+    "MINIPOLYM": {
+        "prefix": "minipolym",
+        "body": [
+        "minipolym(${1:polylist},${2:varlist},${3:order},${4:varlist}${5:prime});"
+        ],
+        "description":[]
+    },
+    "MODFCTR": {
+        "prefix": "modfctr",
+        "body": [
+        "modfctr(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "MODULE_DEFINEDP": {
+        "prefix": "module_definedp",
+        "body": [
+        "module_definedp(${1:modulename});"
+        ],
+        "description":[]
+    },
+    "MODULE_LIST": {
+        "prefix": "module_list",
+        "body": [
+        "module_list();"
+        ],
+        "description":[]
+    },
+    "MT_LOAD": {
+        "prefix": "mt_load",
+        "body": [
+        "mt_load(${1:file});"
+        ],
+        "description":[]
+    },
+    "MT_SAVE": {
+        "prefix": "mt_save",
+        "body": [
+        "mt_save(${1:file});"
+        ],
+        "description":[]
+    },
+    "ND_DET": {
+        "prefix": "nd_det",
+        "body": [
+        "nd_det(${1:matrix},${2:prime});"
+        ],
+        "description":["primeは省略可"]
+    },
+    "ND_F4": {
+        "prefix": "nd_f4",
+        "body": [
+        "nd_f4(${1:polylist},${2:varlist},${3|0,1|},${4:order});"
+        ],
+        "description":[]
+    },
+    "ND_F4_TRACE": {
+        "prefix": "nd_f4_trace",
+        "body": [
+        "nd_f4_trace(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "ND_GR": {
+        "prefix": "nd_gr",
+        "body": [
+        "nd_gr(${1:polylist},${2:varlist},${3:integer},${4:order});"
+        ],
+        "description":[]
+    },
+    "ND_GR_POSTPROC": {
+        "prefix": "nd_gr_postproc",
+        "body": [
+        "nd_gr_postproc(${1:polylist},${2:varlist},${3:integer},${4:order},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "ND_GR_TRACE": {
+        "prefix": "nd_gr_trace",
+        "body": [
+        "nd_gr_trace(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "ND_WEYL_GR": {
+        "prefix": "nd_weyl_gr",
+        "body": [
+        "nd_weyl_gr(${1:polylist},${2:varlist},${3:integer},${4:order});"
+        ],
+        "description":[]
+    },
+    "ND_WEYL_GR_POSTPROC": {
+        "prefix": "nd_weyl_gr_postproc",
+        "body": [
+        "nd_weyl_gr_postproc(${1:polylist},${2:varlist},${3:integer},${4:order},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "ND_WEYL_GR_TRACE": {
+        "prefix": "nd_weyl_gr_trace",
+        "body": [
+        "nd_weyl_gr_trace(${1:polylist},${2:varlist},${3|0,1|},${4:integer},${5:order});"
+        ],
+        "description":[]
+    },
+    "NEWALG": {
+        "prefix": "newalg",
+        "body": [
+        "newalg(${1:poly});"
+        ],
+        "description":[]
+    },
+    "NEWBYTEARRAY": {
+        "prefix": "newbytearray",
+        "body": [
+        "newbytearray(${1:integer},${2:list});"
+        ],
+        "description":[]
+    },
+    "NEWMAT": {
+        "prefix": "newmat",
+        "body": [
+        "newmat(${1:integer},${2:integer},${3:elements});"
+        ],
+        "description":[]
+    },
+    "NEWSTRUCT": {
+        "prefix": "newstruct",
+        "body": [
+        "newstruct(${1:name});"
+        ],
+        "description":[]
+    },
+    "NEWVECT": {
+        "prefix": "newvect",
+        "body": [
+        "newvect(${1:integer},${2:list});"
+        ],
+        "description":["listは省略可"]
+    },
+    "NM": {
+        "prefix": "nm",
+        "body": [
+        "nm(${1:rat});"
+        ],
+        "description":[]
+    },
+    "NMONO": {
+        "prefix": "nmono",
+        "body": [
+        "nmono(${1:rat});"
+        ],
+        "description":[]
+    },
+    "NTOGF2N": {
+        "prefix": "ntogf2n",
+        "body": [
+        "ntogf2n(${1:integer});"
+        ],
+        "description":[]
+    },
+    "NTOINT32": {
+        "prefix": "ntoint32",
+        "body": [
+        "ntoint32(${1:integer});"
+        ],
+        "description":[]
+    },
+    "NTYPE": {
+        "prefix": "ntype",
+        "body": [
+        "ntype(${1:num});"
+        ],
+        "description":[]
+    },
+    "OPEN_CANVAS": {
+        "prefix": "open_canvas",
+        "body": [
+        "open_canvas(${1:id},${2:geometry});"
+        ],
+        "description":[]
+    },
+    "OPEN_FILE": {
+        "prefix": "open_file",
+        "body": [
+        "open_file(\"${1:file}\",${2:mode});"
+        ],
+        "description":[]
+    },
+    "ORD": {
+        "prefix": "ord",
+        "body": [
+        "ord(${1:varlist});"
+        ],
+        "description":[]
+    },
+    "OUTPUT": {
+        "prefix": "output",
+        "body": [
+        "output(\"${1:file}\");"
+        ],
+        "description":[]
+    },
+    "OX_CMO_RPC": {
+        "prefix": "ox_cmo_rpc",
+        "body": [
+        "ox_cmo_rpc(${1:integer},\"${2:function}\",${3:args});"
+        ],
+        "description":[]
+    },
+    "OX_EXECUTE_STRING": {
+        "prefix": "ox_execute_string",
+        "body": [
+        "ox_execute_string(${1:integer},\"${2:command}\");"
+        ],
+        "description":[]
+    },
+    "OX_FLUSH": {
+        "prefix": "ox_flush",
+        "body": [
+        "ox_flush(${1:id});"
+        ],
+        "description":[]
+    },
+    "OX_GET": {
+        "prefix": "ox_get",
+        "body": [
+        "ox_get(${1:integer});"
+        ],
+        "description":[]
+    },
+    "OX_GET_SERVERINFO": {
+        "prefix": "ox_get_serverinfo",
+        "body": [
+        "ox_get_serverinfo(${1:id});"
+        ],
+        "description":[]
+    },
+    "OX_LAUNCH": {
+        "prefix": "ox_launch",
+        "body": [
+        "ox_launch(${1:host},${2:dir},${3:command});"
+        ],
+        "description":[]
+    },
+    "OX_LAUNCH_GENERIC": {
+        "prefix": "ox_launch_generic",
+        "body": [
+        "ox_launch_generic(${1:host},${2:launch},${3:server},${4:use_unix},${5:use_ssh},${6:use_x},${7:conn_to_serv});"
+        ],
+        "description":[]
+    },
+    "OX_LAUNCH_NOX": {
+        "prefix": "ox_launch_nox",
+        "body": [
+        "ox_launch_nox(${1:host},${2:dir},${3:command});"
+        ],
+        "description":[]
+    },
+    "OX_POP_CMO": {
+        "prefix": "ox_pop_cmo",
+        "body": [
+        "ox_pop_cmo(${1:number});"
+        ],
+        "description":[]
+    },
+    "OX_POP_LOCAL": {
+        "prefix": "ox_pop_local",
+        "body": [
+        "ox_pop_local(${1:number});"
+        ],
+        "description":[]
+    },
+    "OX_POPS": {
+        "prefix": "ox_pops",
+        "body": [
+        "ox_pops(${1:number},${2:integer});"
+        ],
+        "description":[]
+    },
+    "OX_PUSH_CMD": {
+        "prefix": "ox_push_cmd",
+        "body": [
+        "ox_push_cmd(${1:number},\"${2:command}\");"
+        ],
+        "description":[]
+    },
+    "OX_PUSH_CMO": {
+        "prefix": "ox_push_cmo",
+        "body": [
+        "ox_push_cmo(${1:number},${2:obj});"
+        ],
+        "description":[]
+    },
+    "OX_PUSH_LOCAL": {
+        "prefix": "ox_push_local",
+        "body": [
+        "ox_push_local(${1:number},${2:obj});"
+        ],
+        "description":[]
+    },
+    "OX_RESET": {
+        "prefix": "ox_reset",
+        "body": [
+        "ox_reset(${1:number});"
+        ],
+        "description":[]
+    },
+    "OX_RPC": {
+        "prefix": "ox_rpc",
+        "body": [
+        "ox_rpc(${1:integer},\"${2:function}\",${3:args});"
+        ],
+        "description":[]
+    },
+    "OX_SELECT": {
+        "prefix": "ox_select",
+        "body": [
+        "ox_select(${1:nlist},${2:timeout});"
+        ],
+        "description":[]
+    },
+    "OX_SHUTDOWN": {
+        "prefix": "ox_shutdown",
+        "body": [
+        "ox_shutdown(${1:id});"
+        ],
+        "description":[]
+    },
+    "OX_SYNC": {
+        "prefix": "ox_sync",
+        "body": [
+        "ox_sync(${1:number});"
+        ],
+        "description":[]
+    },
+    "P_NF": {
+        "prefix": "p_nf",
+        "body": [
+        "p_nf(${1:poly},${2:polylist},${3:varlist},${4:order});"
+        ],
+        "description":[]
+    },
+    "P_NF_MOD": {
+        "prefix": "p_nf_mod",
+        "body": [
+        "p_nf_mod(${1:poly},${2:polylist},${3:varlist},${4:order},${5:prime});"
+        ],
+        "description":[]
+    },
+    "P_TERMS": {
+        "prefix": "p_terms",
+        "body": [
+        "p_terms(${1:poly}${2:varlist},${3:order});"
+        ],
+        "description":[]
+    },
+    "P_TRUE_NF": {
+        "prefix": "p_true_nf",
+        "body": [
+        "p_true_nf(${1:poly},${2:polylist},${3:varlist},${4:order});"
+        ],
+        "description":[]
+    },
+    "P_TRUE_NF_MOD": {
+        "prefix": "p_true_nf_mod",
+        "body": [
+        "p_true_nf_mod(${1:poly},${2:polylist},${3:varlist},${4:order},${5:prime});"
+        ],
+        "description":[]
+    },
+    "PARI": {
+        "prefix": "pari",
+        "body": [
+        "pari(${1:function},${2:arg},${3:integer});"
+        ],
+        "description":[]
+    },
+    "PLOT": {
+        "prefix": "plot",
+        "body": [
+        "plot(${1:function},${2:geometry},${3:xrange},${4:yrange},${5:zrange},${6:id},${7:name});"
+        ],
+        "description":[]
+    },
+    "PLOTOVER": {
+        "prefix": "plotover",
+        "body": [
+        "plotover(${1:function},${2:id},${3:number});"
+        ],
+        "description":[]
+    },
+    "POLARPLOT": {
+        "prefix": "polarplot",
+        "body": [
+        "polarplot(${1:function},${2:geometry},${3:thetarange},${4:id},${5:name});"
+        ],
+        "description":[]
+    },
+    "PRIM": {
+        "prefix": "prim",
+        "body": [
+        "prim(${1:poly},${2:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "PRIMADEC": {
+        "prefix": "primadec",
+        "body": [
+        "primadec(${1:polylist},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "PRIME": {
+        "prefix": "prime",
+        "body": [
+        "prime(${1:integer});"
+        ],
+        "description":[]
+    },
+    "PRIMEDEC": {
+        "prefix": "primedec",
+        "body": [
+        "primedec(${1:polylist},${2:varlist});"
+        ],
+        "description":[]
+    },
+    "PRIMEDEC_MOD": {
+        "prefix": "primedec_mod",
+        "body": [
+        "primedec_mod(${1:polylist},${2:varlist},${3:order},${4:integer},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "PRINT": {
+        "prefix": "print",
+        "body": [
+        "print(${1:obj},${2|0,1,2|})$"
+        ],
+        "description":[]
+    },
+    "PSUBST": {
+        "prefix": "psubst",
+        "body": [
+        "psubst(${1:rat},${2:var},${3:rat});"
+        ],
+        "description":[]
+    },
+    "PTOGF2N": {
+        "prefix": "ptogf2n",
+        "body": [
+        "ptogf2n(${1:poly});"
+        ],
+        "description":[]
+    },
+    "PTOSFP": {
+        "prefix": "ptosfp",
+        "body": [
+        "ptosfp(${1:poly});"
+        ],
+        "description":[]
+    },
+    "PTOZP": {
+        "prefix": "ptozp",
+        "body": [
+        "ptozp(${1:poly});"
+        ],
+        "description":[]
+    },
+    "PURGE_STDIN": {
+        "prefix": "purge_stdin",
+        "body": [
+        "purge_stdin();"
+        ],
+        "description":[]
+    },
+    "PUT_BYTE": {
+        "prefix": "put_byte",
+        "body": [
+        "put_byte(${1:num},c);"
+        ],
+        "description":[]
+    },
+    "QSORT": {
+        "prefix": "qsort",
+        "body": [
+        "qsort(${1:array},${2:function});"
+        ],
+        "description":[]
+    },
+    "QUIT": {
+        "prefix": "quit",
+        "body": [
+        "quit$"
+        ],
+        "description":[]
+    },
+    "RANDOM": {
+        "prefix": "random",
+        "body": [
+        "random(${1:seed});"
+        ],
+        "description":["seedは省略可"]
+    },
+    "RANDOM_FF": {
+        "prefix": "random_ff",
+        "body": [
+        "random_ff();"
+        ],
+        "description":[]
+    },
+    "RANDPOLY_FF": {
+        "prefix": "randpoly_ff",
+        "body": [
+        "randpoly_ff(${1:integer},${2:var});"
+        ],
+        "description":[]
+    },
+    "RATTTOALGP": {
+        "prefix": "rattoalgp",
+        "body": [
+        "rattoalgp(${1:poly},${2:alglist});"
+        ],
+        "description":[]
+    },
+    "RED": {
+        "prefix": "red",
+        "body": [
+        "red(${1:rat});"
+        ],
+        "description":[]
+    },
+    "REGISTER_HANDLER": {
+        "prefix": "register_handler",
+        "body": [
+        "register_handler(${1:function});"
+        ],
+        "description":[]
+    },
+    "REGISTER_SERVER": {
+        "prefix": "register_server",
+        "body": [
+        "register_server(${1:control_socket},${2:control_port},${3:sever_socket},${4:server_port});"
+        ],
+        "description":[]
+    },
+    "REMOVE_FILE": {
+        "prefix": "remove_file",
+        "body": [
+        "remove_file(${1:file});"
+        ],
+        "description":[]
+    },
+    "REMOVE_MODULE": {
+        "prefix": "remove_module",
+        "body": [
+        "remove_module(${1:modulename});"
+        ],
+        "description":[]
+    },
+    "RES": {
+        "prefix": "res",
+        "body": [
+        "res(${1:var},${2:poly},${3:poly},${4:prime});"
+        ],
+        "description":["primeは省略可"]
+    },
+    "REVERSE": {
+        "prefix": "reverse",
+        "body": [
+        "reverse(${1:list});"
+        ],
+        "description":[]
+    },
+    "RINT": {
+        "prefix": "rint",
+        "body": [
+        "rint(${1:float});"
+        ],
+        "description":[]
+    },
+    "ROWA": {
+        "prefix": "rowa",
+        "body": [
+        "rowa(${1:matrix},${2:i},${3:c});"
+        ],
+        "description":[]
+    },
+    "ROWM": {
+        "prefix": "rowm",
+        "body": [
+        "rowm(${1:matrix},${2:i},${3:c});"
+        ],
+        "description":[]
+    },
+    "ROWX": {
+        "prefix": "rowx",
+        "body": [
+        "rowx(${1:matrix},${2:i},${3:j});"
+        ],
+        "description":[]
+    },
+    "RTOSTR": {
+        "prefix": "rtostr",
+        "body": [
+        "rtostr(${1:obj});"
+        ],
+        "description":[]
+    },
+    "SDIV": {
+        "prefix": "sdiv",
+        "body": [
+        "sdiv(${1:poly},${2:poly},${3:var});"
+        ],
+        "description":[]
+    },
+    "SDIVM": {
+        "prefix": "sdivm",
+        "body": [
+        "sdivm(${1:poly},${2:poly},${3:prime},${4:var});"
+        ],
+        "description":[]
+    },
+    "SET_FIELD": {
+        "prefix": "set_field",
+        "body": [
+        "set_field(${1:rootlist});"
+        ],
+        "description":[]
+    },
+    "SET_UPFFT": {
+        "prefix": "set_upfft",
+        "body": [
+        "set_upfft(${1:integer});"
+        ],
+        "description":[]
+    },
+    "SET_UPKARA": {
+        "prefix": "set_upkara",
+        "body": [
+        "set_upkara(${1:integer});"
+        ],
+        "description":[]
+    },
+    "SET_UPTKARA": {
+        "prefix": "set_uptkara",
+        "body": [
+        "set_uptkara(${1:integer});"
+        ],
+        "description":[]
+    },
+    "SETBPREC": {
+        "prefix": "setbprec",
+        "body": [
+        "setbprec(${1:integer});"
+        ],
+        "description":[]
+    },
+    "SETMOD": {
+        "prefix": "setmod",
+        "body": [
+        "setmod(${1:prime});"
+        ],
+        "description":[]
+    },
+    "SETMOD_FF": {
+        "prefix": "setmod_ff",
+        "body": [
+        "setmod_ff(${1:?});"
+        ],
+        "description":[]
+    },
+    "SETPREC": {
+        "prefix": "setprec",
+        "body": [
+        "setprec(${1:integer});"
+        ],
+        "description":[]
+    },
+    "SETROUND": {
+        "prefix": "setround",
+        "body": [
+        "setround(${1|0,1,2,3|});"
+        ],
+        "description":["引数は空欄でも可"]
+    },
+    "SFFCTR": {
+        "prefix": "sffctr",
+        "body": [
+        "sffctr(${1:poly});"
+        ],
+        "description":[]
+    },
+    "SFPTOP": {
+        "prefix": "sfptop",
+        "body": [
+        "sfptop(${1:poly});"
+        ],
+        "description":[]
+    },
+    "SHELL": {
+        "prefix": "shell",
+        "body": [
+        "shell(${1:shellcommand});"
+        ],
+        "description":[]
+    },
+    "SIMP_FF": {
+        "prefix": "simp_ff",
+        "body": [
+        "simp_ff(${1:obj});"
+        ],
+        "description":[]
+    },
+    "SIMPALG": {
+        "prefix": "simpalg",
+        "body": [
+        "simpalg(${1:rat});"
+        ],
+        "description":[]
+    },
+    "SIZE": {
+        "prefix": "size",
+        "body": [
+        "size(${1:vector});"
+        ],
+        "description":["matrixも彁"]
+    },
+    "SLEEP": {
+        "prefix": "sleep",
+        "body": [
+        "sleep(${1:interval});"
+        ],
+        "description":[]
+    },
+    "SP": {
+        "prefix": "sp",
+        "body": [
+        "sp(${1:poly});"
+        ],
+        "description":[]
+    },
+    "SP_NOALG": {
+        "prefix": "sp_noalg",
+        "body": [
+        "sp_noalg(${1:poly});"
+        ],
+        "description":[]
+    },
+    "SP_NORM": {
+        "prefix": "sp_norm",
+        "body": [
+        "sp_norm(${1:alg},${2:var},${3:poly},${4:alglist});"
+        ],
+        "description":[]
+    },
+    "SQFR": {
+        "prefix": "sqfr",
+        "body": [
+        "sqfr(${1:poly});"
+        ],
+        "description":[]
+    },
+    "SQR": {
+        "prefix": "sqr",
+        "body": [
+        "sqr(${1:poly},${2:poly},${3:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "SQRM": {
+        "prefix": "sqrm",
+        "body": [
+        "sqrm(${1:poly},${2:poly},${3:prime},${4:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "SREM": {
+        "prefix": "srem",
+        "body": [
+        "srem(${1:poly},${2:poly},${3:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "SREMM": {
+        "prefix": "sremm",
+        "body": [
+        "sremm(${1:poly},${2:poly},${3:prime},${4:var});"
+        ],
+        "description":["varは省略可"]
+    },
+    "STR_CHR": {
+        "prefix": "str_chr",
+        "body": [
+        "str_chr(${1:string},${2:start},${3:c});"
+        ],
+        "description":[]
+    },
+    "STR_LEN": {
+        "prefix": "str_len",
+        "body": [
+        "str_len(${1:string});"
+        ],
+        "description":[]
+    },
+    "STRTOASCII": {
+        "prefix": "strtoascii",
+        "body": [
+        "strtoascii(${1:string});"
+        ],
+        "description":[]
+    },
+    "STRTOV": {
+        "prefix": "strtov",
+        "body": [
+        "strtov(${1:string});"
+        ],
+        "description":[]
+    },
+    "STRUCT_TYPE": {
+        "prefix": "struct_type",
+        "body": [
+        "struct_type(${1:obj});"
+        ],
+        "description":[]
+    },
+    "SUB_STR": {
+        "prefix": "sub_str",
+        "body": [
+        "sub_str(${1:string},${2:start},${3:end});"
+        ],
+        "description":[]
+    },
+    "SUBST": {
+        "prefix": "subst",
+        "body": [
+        "subst(${1:rat},${2:var},${3:rat});"
+        ],
+        "description":["varとratは省略可"]
+    },
+    "TDIV": {
+        "prefix": "tdiv",
+        "body": [
+        "tdiv(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "TIME": {
+        "prefix": "time",
+        "body": [
+        "time();"
+        ],
+        "description":[]
+    },
+    "TIMER": {
+        "prefix": "timer",
+        "body": [
+        "timer(${1:interval},${2:expr},${3:val});"
+        ],
+        "description":[]
+    },
+    "TOLEX": {
+        "prefix": "tolex",
+        "body": [
+        "tolex(${1:polylist},${2:varlist},${3:order},${4:varlist});"
+        ],
+        "description":[]
+    },
+    "TOLEX_D": {
+        "prefix": "tolex_d",
+        "body": [
+        "tolex_d(${1:polylist},${2:varlist},${3:order},${4:varlist},${5:procs});"
+        ],
+        "description":[]
+    },
+    "TOLEX_GSL": {
+        "prefix": "tolex_gsl",
+        "body": [
+        "tolex_gsl(${1:polylist},${2:varlist},${3:order},${4:varlist});"
+        ],
+        "description":[]
+    },
+    "TOLEX_GSL_D": {
+        "prefix": "tolex_gsl_d",
+        "body": [
+        "tolex_gsl_d(${1:polylist},${2:varlist},${3:order},${4:varlist},${5:procs});"
+        ],
+        "description":[]
+    },
+    "TOLEX_TL": {
+        "prefix": "tolex_tl",
+        "body": [
+        "tolex_tl(${1:polylist},${2:varlist},${3:order},${4:varlist},${5|0,1|});"
+        ],
+        "description":[]
+    },
+    "TOLEXM": {
+        "prefix": "tolexm",
+        "body": [
+        "tolexm(${1:polylist},${2:varlist},${3:order},${4:varlist},${5:prime});"
+        ],
+        "description":[]
+    },
+    "TRY_ACCEPT": {
+        "prefix": "try_accept",
+        "body": [
+        "try_accept(${1:socket},${2:port});"
+        ],
+        "description":[]
+    },
+    "TRY_BIND_LISTEN": {
+        "prefix": "try_bind_listen",
+        "body": [
+        "try_bind_listen(${1:port});"
+        ],
+        "description":[]
+    },
+    "TRY_CONNECT": {
+        "prefix": "try_connect",
+        "body": [
+        "try_connect(${1:host},${2:port});"
+        ],
+        "description":[]
+    },
+    "TSTART": {
+        "prefix": "tstart",
+        "body": [
+        "tstart();"
+        ],
+        "description":[]
+    },
+    "TSTOP": {
+        "prefix": "tstop",
+        "body": [
+        "tstop();"
+        ],
+        "description":[]
+    },
+    "TYPE": {
+        "prefix": "type",
+        "body": [
+        "type(${1:obj});"
+        ],
+        "description":[]
+    },
+    "UC": {
+        "prefix": "uc",
+        "body": [
+        "uc()$0"
+        ],
+        "description":[]
+    },
+    "UDECOMP": {
+        "prefix": "udecomp",
+        "body": [
+        "udecomp(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "UDIV": {
+        "prefix": "udiv",
+        "body": [
+        "udiv(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UFCTRHINT": {
+        "prefix": "ufctrhint",
+        "body": [
+        "ufctrhint(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "UGCD": {
+        "prefix": "ugcd",
+        "body": [
+        "ugcd(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UINV_AS_POWER_SERIES": {
+        "prefix": "uinv_as_power_series",
+        "body": [
+        "uinv_as_power_series(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "UMUL": {
+        "prefix": "umul",
+        "body": [
+        "umul(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UMUL_FF": {
+        "prefix": "umul_ff",
+        "body": [
+        "umul_ff(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UREM": {
+        "prefix": "urem",
+        "body": [
+        "urem(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UREMBYMUL": {
+        "prefix": "urembymul",
+        "body": [
+        "urembymul(${1:poly},${2:poly});"
+        ],
+        "description":[]
+    },
+    "UREMBYMUL_PRECOMP": {
+        "prefix": "urembymul_precomp",
+        "body": [
+        "urembymul_precomp(${1:poly},${2:poly},${3:poly});"
+        ],
+        "description":[]
+    },
+    "UREVERSE": {
+        "prefix": "ureverse",
+        "body": [
+        "ureverse(${1:poly});"
+        ],
+        "description":[]
+    },
+    "UREVERSE_INV_AS_POWER_SERIES": {
+        "prefix": "ureverse_inv_as_power_series",
+        "body": [
+        "ureverse_inv_as_power_series(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "USQUARE": {
+        "prefix": "usquare",
+        "body": [
+        "usquare(${1:poly});"
+        ],
+        "description":[]
+    },
+    "USQUARE_FF": {
+        "prefix": "usquare_ff",
+        "body": [
+        "usquare_ff(${1:poly});"
+        ],
+        "description":[]
+    },
+    "UTMUL": {
+        "prefix": "utmul",
+        "body": [
+        "utmul(${1:poly},${2:poly},${3:integer});"
+        ],
+        "description":[]
+    },
+    "UTMUL_FF": {
+        "prefix": "utmul_ff",
+        "body": [
+        "utmul_ff(${1:poly},${2:poly},${3:integer});"
+        ],
+        "description":[]
+    },
+    "UTRUNC": {
+        "prefix": "utrunc",
+        "body": [
+        "utrunc(${1:poly},${2:integer});"
+        ],
+        "description":[]
+    },
+    "VAR": {
+        "prefix": "var",
+        "body": [
+        "var(${1:rat});"
+        ],
+        "description":[]
+    },
+    "VARS": {
+        "prefix": "vars",
+        "body": [
+        "vars(${1:obj});"
+        ],
+        "description":[]
+    },
+    "VECT": {
+        "prefix": "vect",
+        "body": [
+        "vect(${1:elements});"
+        ],
+        "description":[]
+    },
+    "VECTOR": {
+        "prefix": "vector",
+        "body": [
+        "vector(${1:integer},${2:list});"
+        ],
+        "description":["listは省略可"]
+    },
+    "VERSION": {
+        "prefix": "version",
+        "body": [
+        "version();"
+        ],
+        "description":[]
+    },
+    "VTOL": {
+        "prefix": "vtol",
+        "body": [
+        "vtol(${1:vector});"
+        ],
+        "description":[]
+    },
+    "VTYPE": {
+        "prefix": "vtype",
+        "body": [
+        "vtype(${1:var});"
+        ],
+        "description":[]
+    },
+    "WHICH": {
+        "prefix": "which",
+        "body": [
+        "which(${1:file});"
+        ],
+        "description":[]
+    },
+    "@N": {
+        "prefix": "@n",
+        "body": [
+        "@n"
+        ],
+        "description":[]
+    },
+    "@@": {
+        "prefix": "@@",
+        "body": [
+        "@@"
+        ],
+        "description":[]
+    },
+    "@I": {
+        "prefix": "@i",
+        "body": [
+        "@i"
+        ],
+        "description":[]
+    },
+    "@PI": {
+        "prefix": "@pi",
+        "body": [
+        "@pi"
+        ],
+        "description":[]
+    },
+    "@E": {
+        "prefix": "@e",
+        "body": [
+        "@e"
+        ],
+        "description":[]
+    },
+    "@": {
+        "prefix": "@",
+        "body": [
+        "@"
+        ],
+        "description":[]
+    },
+    "@>": {
+        "prefix": "@>",
+        "body": [
+        "@>"
+        ],
+        "description":[]
+    },
+    "@<": {
+        "prefix": "@<",
+        "body": [
+        "@<"
+        ],
+        "description":[]
+    },
+    "@>=": {
+        "prefix": "@>=",
+        "body": [
+        "@>="
+        ],
+        "description":[]
+    },
+    "@<=": {
+        "prefix": "@<=",
+        "body": [
+        "@<="
+        ],
+        "description":[]
+    },
+    "@==": {
+        "prefix": "@==",
+        "body": [
+        "@=="
+        ],
+        "description":[]
+    },
+    "@&&": {
+        "prefix": "@&&",
+        "body": [
+        "@&&"
+        ],
+        "description":[]
+    },
+    "@||": {
+        "prefix": "@||",
+        "body": [
+        "@||"
+        ],
+        "description":[]
+    },
+    "BREAK": {
+        "prefix": "break",
+        "body": [
+        "break"
+        ],
+        "description":[]
+    },
+    "CONTINUE": {
+        "prefix": "continue",
+        "body": [
+        "continue"
+        ],
+        "description":[]
+    },
+    "DO": {
+        "prefix": "do",
+        "body": [
+        "do"
+        ],
+        "description":[]
+    },
+    "ELSE": {
+        "prefix": "else",
+        "body": [
+        "else $1{}"
+        ],
+        "description":[]
+    },
+    "EXTERN": {
+        "prefix": "extern ",
+        "body": [
+        "extern "
+        ],
+        "description":[]
+    },
+    "FOR": {
+        "prefix": "for",
+        "body": [
+        "for ($1 ;$2 ;$3) {$4}"
+        ],
+        "description":[]
+    },
+    "IF": {
+        "prefix": "if",
+        "body": [
+        "if ($1){$2}"
+        ],
+        "description":[]
+    },
+    "RETURN": {
+        "prefix": "return",
+        "body": [
+        "return $1;"
+        ],
+        "description":[]
+    },
+    "static": {
+        "prefix": "static",
+        "body": [
+        "static "
+        ],
+        "description":[]
+    },
+    "STRUCT": {
+        "prefix": "struct",
+        "body": [
+        "struct ${1:name} {$2}"
+        ],
+        "description":[]
+    },
+    "WHILE": {
+        "prefix": "while",
+        "body": [
+        "while ($1) {$2}"
+        ],
+        "description":[]
+    },
+    "DEF": {
+        "prefix": "def",
+        "body": [
+        "def $1($2) {$3}"
+        ],
+        "description":[]
+    },
+    "ENDMODULE": {
+        "prefix": "endmodule",
+        "body": [
+        "endmodule;"
+        ],
+        "description":[]
+    }
+}
