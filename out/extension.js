@@ -71,6 +71,9 @@ async function updateStatusBarMode(context) {
         }
     }
 }
+// 権利表記の非表示
+const ASIR_BOOT_MESSAGE_REGEX = /^This is Risa\/Asir,.*?GC \d+\.\d+\.\d+ copyright.*?[\r\n]+/s;
+// メインの関数
 function activate(context) {
     console.log('Congratulations, your extension "risa-enhancers" is now active!');
     const asirOutputChannel = vscode.window.createOutputChannel('Risa/Asir CLI Output');
@@ -144,7 +147,6 @@ function activate(context) {
             const config = vscode.workspace.getConfiguration('risaasirExecutor');
             // OSを判定
             const currentOsPlatform = process.platform;
-            console.log(`Detected OS platform: ${currentOsPlatform}`);
             // 実行中のプロセスがある場合は、新しい実行を開始する前にキャンセルを促す。
             if (currentAsirProcess) {
                 vscode.window.showWarningMessage('Risa/Asir is already running. Please cancel the current execution first.', 'Cancel')
@@ -163,7 +165,8 @@ function activate(context) {
                     const wslDistribution = config.get('wslDistribution', 'Ubuntu');
                     const asirPathLinux = config.get('asirPathLinux');
                     command = 'wsl'; // wsl を直接呼び出す
-                    const wslCommand = `${asirPathLinux || 'asir'} <<'EOF'\n${textToExecute}\nquit;\nEOF`; // WSL内のパスを取得
+                    const asirCommandWithQuiet = `${asirPathLinux || 'asir'} -quiet`;
+                    const wslCommand = `${asirCommandWithQuiet} <<'EOF'\n${textToExecute}\nquit$\nEOF`; // WSL内のパスを取得
                     // WSLコマンド: wsl -d <distro_name> <command_to_run_in_wsl>
                     args = ['-d', wslDistribution, `bash`, '-c', wslCommand];
                     displayMessage = `Executing Risa/Asir WSL (${wslDistribution})...`;
@@ -190,7 +193,7 @@ function activate(context) {
                 const asirPathLinux = config.get('asirPathLinux');
                 // WSLで実行する場合は、bash -c "asirPath" の形式を使う
                 command = 'bash';
-                const linuxCommand = `${asirPathLinux || 'asir'} <<'EOF'\n${textToExecute}\nquit;\nEOF`;
+                const linuxCommand = `${asirPathLinux || 'asir'} <<'EOF'\n${textToExecute}\nquit$\nEOF`;
                 args = ['-c', linuxCommand]; // 設定がなければデフォルトのasirを試す
                 displayMessage = 'Executing Risa/Asir on Linux...';
             }
@@ -198,31 +201,38 @@ function activate(context) {
                 vscode.window.showErrorMessage(`Unsupported OS platform: ${currentOsPlatform}`);
                 return;
             }
+            spawnOptions.maxBuffer = 1024 * 1024 * 100;
             asirOutputChannel.clear();
             asirOutputChannel.show(true);
             asirOutputChannel.appendLine(`---${displayMessage} ---`);
             // asirOutputChannel.appendLine(`Command: ${command} ${args.join(' ')}`);
-            asirOutputChannel.appendLine(`Input:\n${textToExecute}\n---`);
+            // asirOutputChannel.appendLine(`Input:\n${textToExecute}\n---`);
+            // Risa/Asirの出力を蓄積する変数
+            let outputAccumulator = ''; // 標準出力
+            let errorAccumulator = ''; // エラー出力
             try {
                 // WindwsとmacOSの場合はstdinにコマンドを流し込む
                 const asirProcess = (0, child_process_1.spawn)(command, args, spawnOptions);
                 currentAsirProcess = asirProcess;
                 asirCancelStatusBarItem.show();
                 if ((currentOsPlatform === 'win32' && !config.get('useWslFromWindows')) || currentOsPlatform === 'darwin') {
-                    const fullCommand = textToExecute + '\nquit;\n';
+                    const fullCommand = textToExecute + '\nquit$\n';
                     asirProcess.stdin.write(fullCommand);
                     asirProcess.stdin.end();
                 }
                 asirProcess.stdout.on('data', (data) => {
+                    let decodedString;
                     if (currentOsPlatform === 'win32') {
-                        const decodedString = new util_1.TextDecoder('shift-jis').decode(data);
-                        asirOutputChannel.append(decodedString);
+                        decodedString = new util_1.TextDecoder('shift-jis').decode(data);
+                        // asirOutputChannel.append(decodedString);
                     }
                     else {
-                        asirOutputChannel.append(data.toString());
+                        decodedString = data.toString();
                     }
+                    outputAccumulator += decodedString;
+                    // asirOutputChannel.append(decodedString);
                 });
-                process.stderr.on('data', (data) => {
+                asirProcess.stderr.on('data', (data) => {
                     let errorString;
                     if (currentOsPlatform === 'win32') {
                         errorString = new util_1.TextDecoder('shift-jis').decode(data);
@@ -230,17 +240,32 @@ function activate(context) {
                     else {
                         errorString = data.toString();
                     }
-                    if (!errorString.includes('Calling the registered quit callbacks...done.')) {
-                        asirOutputChannel.appendLine(`Error from Risa/Asir: ${errorString}`);
-                    }
+                    errorAccumulator += errorString; // ここでエラー蓄積
+                    // if (!errorString.includes('Calling the registered quit callbacks...done.')) {
+                    asirOutputChannel.appendLine(`Error from Risa/Asir: ${errorString}`);
+                    // }
                 });
+                let finalErrorMessage = errorAccumulator;
+                // 特定の終了メッセージをフィルタリング
+                const quitMessage = "Calling the registered quit callbacks...done.\r\n"; // 末尾の改行も含む
+                if (finalErrorMessage.includes(quitMessage)) {
+                    finalErrorMessage = finalErrorMessage.replace(quitMessage, '').trim();
+                }
                 asirProcess.on('close', (code) => {
                     if (code !== 0) {
                         asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
                         vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
+                        if (outputAccumulator.length > 0) {
+                            asirOutputChannel.appendLine(`--- Risa/Asir Standard Output (Error Context) ---`);
+                            asirOutputChannel.append(outputAccumulator);
+                            asirOutputChannel.appendLine(`--- End of Standard Output (Error Context) ---`);
+                        }
                     }
                     else {
                         asirOutputChannel.appendLine(`--- Risa/Asir execution finished successfully ---`);
+                        let filteredOutput = outputAccumulator;
+                        filteredOutput = filteredOutput.replace(ASIR_BOOT_MESSAGE_REGEX, '');
+                        createResultWebview(context, textToExecute, filteredOutput, finalErrorMessage);
                     }
                     currentAsirProcess = null;
                     asirCancelStatusBarItem.hide();
@@ -339,12 +364,12 @@ function activate(context) {
     context.subscriptions.push(diagnosticCollection);
     vscode.workspace.onDidOpenTextDocument(document => {
         if (document.languageId === 'rr') {
-            updateDiagnostics(document, diagnosticCollection);
+            updateDiagnosticsAdvanced(document, diagnosticCollection);
         }
     }, null, context.subscriptions);
     vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document.languageId === 'rr') {
-            updateDiagnostics(event.document, diagnosticCollection);
+            updateDiagnosticsAdvanced(event.document, diagnosticCollection);
         }
     }, null, context.subscriptions);
     let disposableHelloWorld = vscode.commands.registerCommand('risa-enhancers.helloWorld', () => {
@@ -353,36 +378,166 @@ function activate(context) {
     context.subscriptions.push(disposableHelloWorld);
 }
 // コード診断の関数 
-function updateDiagnostics(document, diagnosticCollection) {
+function updateDiagnosticsAdvanced(document, diagnosticCollection) {
     if (document.languageId !== 'rr') {
         return;
     }
     const text = document.getText();
     const diagnostics = [];
-    const openBrackets = { '(': 0, '[': 0, '{': 0 };
-    const closeBrackets = { ')': 0, ']': 0, '}': 0 };
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        if (openBrackets.hasOwnProperty(char)) {
-            openBrackets[char]++;
+    const stack = [];
+    const bracketRegex = /(\(|\)|\[|\]|\{|\})/g;
+    let match;
+    while ((match = bracketRegex.exec(text)) !== null) {
+        const bracket = match[0];
+        const position = document.positionAt(match.index);
+        if (bracket === '(' || bracket === '[' || bracket === '{') {
+            stack.push({ type: bracket, position });
         }
-        else if (closeBrackets.hasOwnProperty(char)) {
-            closeBrackets[char]++;
+        else if (bracket === ')' || bracket === ']' || bracket === '}') {
+            if (stack.length === 0) {
+                // 対応する開き括弧がない
+                diagnostics.push(new vscode.Diagnostic(new vscode.Range(position, position.translate(0, 1)), `対応する開き括弧がありません: ${bracket}`, vscode.DiagnosticSeverity.Error));
+            }
+            else {
+                const lastOpenBracket = stack.pop(); // lastOpenBracketはBracketInfo | undefined の型になる
+                // ここで lastOpenBracket が undefined でないことを保証
+                if (lastOpenBracket) {
+                    if (!isMatchingBracket(lastOpenBracket.type, bracket)) {
+                        // Type mismatch (incorrect nesting)
+                        diagnostics.push(new vscode.Diagnostic(new vscode.Range(position, position.translate(0, 1)), `不正なネスト: '${bracket}' は '${lastOpenBracket.type}' と対応していません`, vscode.DiagnosticSeverity.Error));
+                    }
+                }
+                else {
+                    // スタックが空なのにポップしようとした、というロジック上の矛盾がある場合
+                    diagnostics.push(new vscode.Diagnostic(new vscode.Range(position, position.translate(0, 1)), `予期せぬエラー: スタックが空なのにポップされました。`, vscode.DiagnosticSeverity.Error));
+                }
+            }
         }
     }
-    if (openBrackets['('] !== closeBrackets[')']) {
-        const diagnostic = new vscode.Diagnostic(new vscode.Range(document.positionAt(text.length), document.positionAt(text.length)), '開き括弧と閉じ括弧の数が一致しません', vscode.DiagnosticSeverity.Warning);
-        diagnostics.push(diagnostic);
-    }
-    if (openBrackets['['] !== closeBrackets[']']) {
-        const diagnostic = new vscode.Diagnostic(new vscode.Range(document.positionAt(text.length), document.positionAt(text.length)), '開き角括弧と閉じ角括弧の数が一致しません', vscode.DiagnosticSeverity.Warning);
-        diagnostics.push(diagnostic);
-    }
-    if (openBrackets['{'] !== closeBrackets['}']) {
-        const diagnostic = new vscode.Diagnostic(new vscode.Range(document.positionAt(text.length), document.positionAt(text.length)), '開き中括弧と閉じ中括弧の数が一致しません', vscode.DiagnosticSeverity.Warning);
-        diagnostics.push(diagnostic);
+    // 閉じられていない開き括弧のチェック
+    while (stack.length > 0) {
+        const openBracket = stack.pop();
+        if (openBracket) { // ここで openBracket が undefined でないことを保証
+            diagnostics.push(new vscode.Diagnostic(new vscode.Range(openBracket.position, openBracket.position.translate(0, 1)), `開き括弧 '${openBracket.type}' が閉じられていません`, vscode.DiagnosticSeverity.Error));
+        }
     }
     diagnosticCollection.set(document.uri, diagnostics);
+}
+function isMatchingBracket(open, close) {
+    return (open === '(' && close === ')') ||
+        (open === '[' && close === ']') ||
+        (open === '{' && close === '}');
+}
+// Webviewの関数
+/**
+ * Risa/Asirの結果を表示するための Webview を作成・表示。
+ * @param context 拡張機能コンテキスト
+ * @param inputCode 実行したRisa/Asirのコード
+ * @param outputResult Risa/Asirの計算結果
+ */
+function createResultWebview(context, inputCode, outputResult, errorResult) {
+    const panel = vscode.window.createWebviewPanel('risaasirResult', 'Risa/Asir Result', vscode.ViewColumn.Beside, {
+        enableScripts: false, // JavaScriptを使う場合はtrue
+        localResourceRoots: [
+            vscode.Uri.file(path.join(context.extensionPath, 'media')) // CSS/JSファイルをロードできるようにする。
+        ]
+    });
+    panel.webview.html = getWebviewContent(inputCode, outputResult, errorResult);
+    panel.onDidDispose(() => { }, null, context.subscriptions);
+}
+/**
+ * Webviewに表示するHTMLコンテンツの生成
+ * @param inputCode 実行したRisa/Asir のコード
+ * @param outputResult Risa/Asirの計算結果
+ * @returns HTML 文字列
+ */
+function getWebviewContent(inputCode, outputResult, errorResult) {
+    // 入力コードと出力結果に含まれるHTML特殊文字を安全に表示させる。
+    const escapedInputCode = inputCode.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escapedOutputResult = outputResult.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escapedErrorResult = errorResult.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    let errorSectionHtml = '';
+    if (escapedErrorResult.trim().length > 0) {
+        errorSectionHtml = `
+            <div class="section">
+                <h2>Risa/Asir Error Message</h2>
+                <div class="code-block error-block">
+                    <div class="content-wrapper">
+                        <pre>${escapedErrorResult}</pre>
+                    </div>
+                </div>
+            </div>`;
+    }
+    const finalHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risa/Asir Result</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 1.5em; line-height: 1.6; }
+        h1, h2 { color: var(--vscode-editor-foreground); }
+        .section { margin-bottom: 2em; }
+        .code-block {
+            background-color: var(--vscode-editor-background);
+            border: 1px solid var(--vscode-editorGroup-border);
+            border-radius: 4px;
+            padding: 1em;
+            overflow-x: auto; /* 横スクロールを可能にする */
+            /* font-family: 'SF Mono', Monaco, Consolas, 'Courier New', monospace; */
+            /* white-space: pre; */
+            /* word-wrap: normal; */
+            color: var(--vscode-editor-foreground);
+        }
+        .code-block pre {
+            font-family: 'SF Mono', Monaco, Consolas, 'Courier New', monospace;
+            white-space: pre; /* 念のため明示的に指定 */
+            word-wrap: normal; /* 念のため明示的に指定 */
+            margin: 0; /* <pre> タグのデフォルトのマージンをリセット */
+            padding: 0;
+            text-align: left;
+        }
+        /* VS Code のテーマカラーを継承 */
+        body {
+            background-color: var(--vscode-editor-background);
+            color: var(--vscode-editor-foreground);
+        }
+        /* エラーメッセージ用のスタイル */
+        .error-block { /* エラーブロック専用のスタイル */
+            border-color: var(--vscode-errorForeground); /* エラー色で枠を強調 */
+            background-color: var(--vscode-terminal-ansiBrightBlack); /* 必要であれば背景色も変更 */
+        }
+        .error-block pre { /* エラーブロック内のテキストスタイル */
+            color: var(--vscode-errorForeground);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Risa/Asir Computation Result</h1>
+
+    ${errorSectionHtml}
+
+    <div class="section">
+        <h2>Input Code</h2>
+        <div class="code-block">
+            <div class="content-wrapper"> 
+                <pre>${escapedInputCode}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Output Result</h2>
+        <div class="code-block">
+            <div class="content-wrapper"> 
+                <pre>${escapedOutputResult}</pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+    return finalHtml;
 }
 function deactivate() {
     if (asirModeStatusBarItem) {
