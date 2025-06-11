@@ -3,7 +3,12 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 // import * as os from 'os'; 
-import { TextDecoder } from 'util';
+import { /*isFunction,*/ TextDecoder } from 'util';
+import { ASIR_KEYWORDS, ASIR_BUILTIN_FUNCTIONS } from "./builtins";
+import { ctrlc } from 'ctrlc-windows';
+import { rejects } from 'assert';
+// import { start } from 'repl';
+// import { isBuiltin } from 'module';
 
 // パッケージリストの型定義 
 interface PackageInfo {
@@ -16,11 +21,22 @@ interface BracketInfo {
     position: vscode.Position
 }
 
+interface SymbolInfo {
+    name: string;
+    type: 'variable' | 'function' |'parameter';
+    definitionRange?: vscode.Range;
+}
+
 let loadedPackages: PackageInfo[] = []; // パッケージリストを保持する変数 
 let ctrlPackages: PackageInfo[] = [];   // ctrl 用のパッケージリスト
 
+// 定義済みを保持するためのもの（コード診断用）
+let currentDefinedSymbols: Map<string, SymbolInfo> = new Map();
+
 // ステータスバーにWSL変更ボタンの追加
 let asirModeStatusBarItem: vscode.StatusBarItem;
+let asirOutputChannel: vscode.OutputChannel;
+let isDebuggingModeQuitSent: boolean = false;
 
 // 実行中のRisa/Asirプロセスを保持する変数
 let currentAsirProcess: ChildProcessWithoutNullStreams | null = null;
@@ -55,7 +71,7 @@ async function updateStatusBarMode(context: vscode.ExtensionContext) {
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "risa-enhancers" is now active!');
 
-    const asirOutputChannel = vscode.window.createOutputChannel('Risa/Asir CLI Output');
+    asirOutputChannel = vscode.window.createOutputChannel('Risa/Asir CLI Output');
     context.subscriptions.push(asirOutputChannel);
 
     // --- パッケージリストの読み込み ---
@@ -130,7 +146,6 @@ export function activate(context: vscode.ExtensionContext) {
 
             // VS Codeの設定から、WSL経由実行の希望とディストリビューション名を取得
             const config = vscode.workspace.getConfiguration('risaasirExecutor');
-
             // OSを判定
             const currentOsPlatform = process.platform;
 
@@ -144,6 +159,8 @@ export function activate(context: vscode.ExtensionContext) {
                     });
                 return;
             }
+
+            isDebuggingModeQuitSent = false;
 
             if (currentOsPlatform === 'win32') {
                 // Windowsの場合 
@@ -170,7 +187,7 @@ export function activate(context: vscode.ExtensionContext) {
             } else if (currentOsPlatform === 'darwin') {
                 // macOSの場合
                 const asirPathMac = config.get<string>('asirPathMac');
-                command = asirPathMac || 'asir'; // 設定がなければデフォルトのasirを試す
+                command = `${asirPathMac || 'asir'} -quiet`; // 設定がなければデフォルトのasirを試す
                 args = []; // コマンドライン引数は基本的に不要
                 displayMessage = 'Executing Risa/Asir on macOS...';
                 spawnOptions.shell = true;
@@ -202,7 +219,6 @@ export function activate(context: vscode.ExtensionContext) {
             try {
                 // WindwsとmacOSの場合はstdinにコマンドを流し込む
                 const asirProcess = spawn(command, args, spawnOptions);
-
                 currentAsirProcess = asirProcess;
                 asirCancelStatusBarItem.show();
 
@@ -211,6 +227,10 @@ export function activate(context: vscode.ExtensionContext) {
                     asirProcess.stdin.write(fullCommand);
                     asirProcess.stdin.end();
                 }
+
+                // デバッグモード検出用の設定
+                const debugModePromptRegex = /^\(debug\)\s*$/m;
+                let lastOutputChunk = '';
 
                 asirProcess.stdout.on('data', (data: Buffer) => {
                     let decodedString: string;
@@ -222,7 +242,19 @@ export function activate(context: vscode.ExtensionContext) {
                     }
 
                     outputAccumulator += decodedString;
-                    // asirOutputChannel.append(decodedString);
+                    asirOutputChannel.append(decodedString);
+
+                    // デバッグモードを検出
+                    if (!isDebuggingModeQuitSent) {
+                    const recentOutput = lastOutputChunk + decodedString;
+                    if (recentOutput.match(debugModePromptRegex)) {
+                        console.log('Risa/Asir entered debug mode (stdout). Sending "quit" command...');
+                        asirProcess.stdin.write('quit\n');
+                        isDebuggingModeQuitSent = true;
+                        vscode.window.showWarningMessage('Risa/Asir entered debug mode due to an error. Attempting to quit automatically.');
+                    }
+                }
+                lastOutputChunk = decodedString; 
                 });
 
                 asirProcess.stderr.on('data', (data: Buffer) => {
@@ -234,10 +266,17 @@ export function activate(context: vscode.ExtensionContext) {
                     }
 
                     errorAccumulator += errorString; // ここでエラー蓄積
+                    asirOutputChannel.appendLine(`Error from Risa/Asir: ${errorString}`);
 
-                    // if (!errorString.includes('Calling the registered quit callbacks...done.')) {
-                        asirOutputChannel.appendLine(`Error from Risa/Asir: ${errorString}`);
-                    // }
+                    // 念のため
+                    if (!isDebuggingModeQuitSent) {
+                        if (errorString.match(debugModePromptRegex)) {
+                            console.log('Risa/Asir entered debug mode (stderr). Sending "quit" command...');
+                            asirProcess.stdin.write('quit\n');
+                            isDebuggingModeQuitSent = true;
+                            vscode.window.showWarningMessage('Risa/Asir entered debug mode due to an error. Attempting to quit automatically.');
+                        }
+                    }
                 });
 
                 asirProcess.on('close', (code) => {
@@ -251,7 +290,7 @@ export function activate(context: vscode.ExtensionContext) {
                         finalErrorMessage = finalErrorMessage.replace(quitMessage, '').trim();
                     }
 
-                    if (code !== 0) {
+                    if (code !== 0 && !isDebuggingModeQuitSent) {
                         asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
                         vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
 
@@ -303,42 +342,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposableToggleMode);
 
-    // --- 実行をキャンセルするコマンド ---
-    let disposableCancelExecution = vscode.commands.registerCommand('risa_enhancers.cancelExecution', () => {
-        if (currentAsirProcess) {
-            const platform = process.platform;
-            let killedSuccessfully = false;
-
-            // プロセスを終了させるロジック
-            if (platform === 'win32') {
-                // Windowsの場合: taskkill コマンドを使う
-                try {
-                    spawn('taskkill', ['/F', '/T', '/PID', currentAsirProcess.pid!.toString()], { shell: true });
-                    killedSuccessfully = true;
-                } catch (e: any) {
-                    vscode.window.showErrorMessage(`Failed to kill Risa/Asir process on Windows: ${e.message}`);
-                }
-            } else {
-                // Linux/macOSの場合: SIGTERMを送る
-                try {
-                    currentAsirProcess.kill('SIGTERM'); // SIGTERMを送る
-                    killedSuccessfully = true;
-                } catch (e: any) {
-                    vscode.window.showErrorMessage(`Failed to kill Risa/Asir process on Linux/macOS: ${e.message}`);
-                }
-            }
-
-            if (killedSuccessfully) {
-                asirOutputChannel.appendLine(`--- Risa/Asir execution cancelled ---`);
-                vscode.window.showInformationMessage('Risa/Asir execution has been cancelled.');
-                currentAsirProcess = null; // プロセス参照をクリア
-                asirCancelStatusBarItem.hide(); // キャンセルボタンを非表示
-            }
-        } else {
-            vscode.window.showInformationMessage('No Risa/Asir process is currently running.');
-        }
-    });
-    context.subscriptions.push(disposableCancelExecution);
+    // 2. キャンセル実行コマンドの登録
+    registerCancelExecutionCommand(context); // これを追加
+    // もし registerCancelExecutionCommand 関数が disposable を返すなら:
+    // context.subscriptions.push(registerCancelExecutionCommand(context));
 
     // --- executeCodeのステータスバーアイテム ---
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -355,7 +362,7 @@ export function activate(context: vscode.ExtensionContext) {
     asirCancelStatusBarItem.tooltip = 'Click to cancel current Risa/Asir execution';
     // 最初は非表示にしておく
     asirCancelStatusBarItem.hide();
-    context.subscriptions.push(asirCancelStatusBarItem);
+    context.subscriptions.push(asirOutputChannel,asirCancelStatusBarItem);
 
     updateStatusBarMode(context);
 
@@ -369,17 +376,76 @@ export function activate(context: vscode.ExtensionContext) {
     const diagnosticCollection = vscode.languages.createDiagnosticCollection('risa-enhancers');
     context.subscriptions.push(diagnosticCollection);
 
-    vscode.workspace.onDidOpenTextDocument(document => {
+    const triggerDiagnostics = (document: vscode.TextDocument) => {
         if (document.languageId === 'rr') {
-            updateDiagnosticsAdvanced(document, diagnosticCollection);
+            currentDefinedSymbols = updateDiagnosticsComprehensive(document, diagnosticCollection);
         }
+    }
+    vscode.workspace.onDidOpenTextDocument(document => {
+        triggerDiagnostics(document);
     }, null, context.subscriptions);
-
     vscode.workspace.onDidChangeTextDocument(event => {
-        if (event.document.languageId === 'rr') {
-            updateDiagnosticsAdvanced(event.document, diagnosticCollection);
-        }
+        triggerDiagnostics(event.document);
     }, null, context.subscriptions);
+    if (vscode.window.activeTextEditor) {
+        triggerDiagnostics(vscode.window.activeTextEditor.document);
+    }
+
+    // completionItemProviderの登録
+    const CompletionProvider = vscode.languages.registerCompletionItemProvider(
+        { scheme: 'file', language: 'rr'},
+        {
+            provideCompletionItems(document: vscode.TextDocument, position: vscode.Position,token: vscode.CancellationToken, content: vscode.CompletionContext) {
+                const linePrefix = document.lineAt(position).text.substring(0, position.character);
+                const lastWordMatch = linePrefix.match(/\b([a-zA-Z_][a-zA-Z0-9_]*)$/);
+                const lastWord = lastWordMatch ? lastWordMatch[1] : '';
+                const completionItems: vscode.CompletionItem[] = [];
+
+                // 定義済みシンボルからの補完
+                currentDefinedSymbols.forEach((symbol, name) => {
+                    if (name.startsWith(lastWord)) {
+                        const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Variable);
+                        if (symbol.type === 'function') {
+                            item.kind = vscode.CompletionItemKind.Function;
+                            item.insertText = new vscode.SnippetString(`${name}(${symbol.definitionRange ? symbol.definitionRange.start.line + 1 : ''})$0`);
+                            item.detail = `Asir関数 ${name}`;
+                            item.documentation = new vscode.MarkdownString(`\`\`\`asir\ndef ${name}(${symbol.definitionRange ? symbol.definitionRange.start.line + 1 : ''}) { ... }\`\`\`\n\n${name} はユーザー定義関数です。`);
+                        } else if (symbol.type === 'variable') {
+                            item.kind = vscode.CompletionItemKind.Variable;
+                            item.detail = `Asir変数 ${name}`;
+                        } else if (symbol.type === 'parameter') {
+                            item.kind = vscode.CompletionItemKind.Property;
+                            item.detail = `関数引数 ${name}`;
+                        }
+                        completionItems.push(item);
+                    }
+                });
+
+                // 組み込み関数からの補完
+                ASIR_BUILTIN_FUNCTIONS.forEach(funcName => {
+                    if (funcName.startsWith(lastWord)) {
+                        const item = new vscode.CompletionItem(funcName, vscode.CompletionItemKind.Function);
+                        item.detail = `Asir組み込み関数 ${funcName}`;
+                        item.insertText = new vscode.SnippetString(`${funcName}($0)`);
+                        completionItems.push(item);
+                    }
+                });
+
+                // キーワードからの補完
+                ASIR_KEYWORDS.forEach(keyword => {
+                    if (keyword.startsWith(lastWord)) {
+                        const item = new vscode.CompletionItem(keyword, vscode.CompletionItemKind.Keyword);
+                        item.detail = `Asir文`;
+                        completionItems.push(item);
+                    }
+                });
+                return completionItems;
+            }
+        },
+        '.',
+        '('
+    );
+    context.subscriptions.push(CompletionProvider);
 
     let disposableHelloWorld = vscode.commands.registerCommand('risa-enhancers.helloWorld', () => {
         vscode.window.showInformationMessage('Hello VS Code from Risa Enhancers!');
@@ -387,21 +453,153 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposableHelloWorld);
 }
 
+// キャンセルコマンドのサポート関数
+async function interruptAsirProcess(process: ChildProcessWithoutNullStreams, osPlatform: NodeJS.Platform): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+        let timer: NodeJS.Timeout;
+        let listenerActive = false;
+        let receivedInterruptPrompt = false;
+        let receivedAbortPrompt = false;
+        let interruptOutputBuffer = '';
+        const WINDOWS_CTRL_C_EXTIT_CODE = 3221225786;
+
+        const cleanup = () => {
+            clearTimeout(timer);
+            if (listenerActive) {
+                process.stdout.off('data', stdoutListener);
+                process.stderr.off('data', stderrListener);
+            }
+        };
+        const stdoutListener = (data: Buffer) => {
+            const output = data.toString();
+            asirOutputChannel.append(output);
+            interruptOutputBuffer += output;
+
+            if (osPlatform === 'win32') {
+                const interruptPromptRegex = /interrupt\s*\?(q|t|c|d|u|w|\?)/;
+                const abortPromptRegex = /Abort this computation\?\s*\(y or n\)/;
+                if (!receivedInterruptPrompt && output.match(interruptPromptRegex)) {
+                    receivedInterruptPrompt = true;
+                    console.log('Risa/ASir: Reseived "interrupt ?" prompt. Sending "u" to abort current computation.');
+                    process.stdin.write('u\n');
+                    interruptOutputBuffer = '';
+                } else if (receivedInterruptPrompt && !receivedInterruptPrompt && output.match(abortPromptRegex)) {
+                    receivedAbortPrompt = true;
+                    console.log('Risa/Asir: Received "Abort this computation?" prompt. Sending "y" to confirm abort.');
+                    process.stdin.write('y\n');
+                    cleanup();
+                    resolve();
+                    interruptOutputBuffer = '';
+                }
+            }
+        };
+        // 念のため
+        const stderrListener = (data: Buffer) => {
+            const errorOutput = data.toString();
+            asirOutputChannel.appendLine(`Error during interrupt: ${errorOutput}`);
+        };
+        // プロセスが終了したとき
+        const closeListener = (code: number) => {
+            cleanup();
+            if (code === 0 || code === WINDOWS_CTRL_C_EXTIT_CODE) {
+                resolve();
+            } else {
+                reject(new Error(`Risa/Asir process exited with code ${code} unexpectedly during interrupt.`));
+            }
+        };
+        process.stdout.on('data', stdoutListener);
+        process.stderr.on('data', stderrListener);
+        process.once('close', closeListener);
+        listenerActive = true;
+
+        // タイムアウトの設定
+        timer = setTimeout(() => {
+            cleanup();
+            reject(new Error('Risa/Asir did not respond to interrupt prompts within the timeout.'));
+        }, 15000);
+
+        // Ctrl+Cの送信
+        if (osPlatform === 'win32') {
+            try {
+                if (process.pid) {
+                    ctrlc(process.pid);
+                    console.log(`sent Ctrl+C to Risa/Asir process (PID: ${process.pid}) via ctrl-windows.`);
+                } else {
+                    throw new Error("Risa/Asir process PID not found for Ctrl+C.");
+                }
+            } catch (e: any){
+                cleanup();
+                reject(new Error(`Failed to send Ctrl+C on Windows: ${e.message}`));
+            }
+        } else {
+            process.kill('SIGINT');
+            console.log('Sent SIGINT to Risa/Asir process.');
+        }
+    });
+}
+// キャンセルコマンドの関数
+export function registerCancelExecutionCommand(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('risa_enhancers.cancelExecution', async () => {
+        if (!currentAsirProcess) {
+            vscode.window.showInformationMessage('No Risa/Asir process is currently running to cancel.');
+            return;
+        }
+        vscode.window.showInformationMessage('Attempting to interrupt Risa/Asir calculation. Please wait...');
+        asirOutputChannel.appendLine(`--- Interrupting Risa/Asir process... ---`);
+
+        try {
+            await interruptAsirProcess(currentAsirProcess, process.platform);
+            vscode.window.showInformationMessage('Risa/Asir calculation successfully interrupted.');
+            asirOutputChannel.appendLine(`--- Risa/Asir process successfully interrupted ---`);
+        } catch (error: any) {
+            console.error('Error during Risa/Asir interruption:', error);
+            vscode.window.showErrorMessage(`Failed to interrupt Risa/Asir: ${error.message}. Attempting forced termination.`);
+            asirOutputChannel.appendLine(`--- Forced termination of Risa/Asir process... ---`);
+
+            // タイムアウトなどで中断できなかった場合、最終手段として強制終了
+            if (currentAsirProcess) {
+                if (process.platform === 'win32') {
+                    const cp = require('child_process');
+                    try {
+                        cp.execSync(`taskkill /F /T /PID ${currentAsirProcess.pid}`);
+                        vscode.window.showInformationMessage('Risa/Asir process forced terminated.');
+                        asirOutputChannel.appendLine(`--- Risa/Asir process forced terminated ---`);
+                    } catch (e: any) {
+                        vscode.window.showErrorMessage(`Failed to force terminate Risa/Asir: ${e.message}`);
+                        asirOutputChannel.appendLine(`--- Failed to force terminate: ${e.message} ---`);
+                    }
+                } else {
+                    currentAsirProcess.kill('SIGKILL');
+                    vscode.window.showInformationMessage('Risa/Asir process forced terminated.');
+                    asirOutputChannel.appendLine(`--- Risa/Asir process forced terminated ---`);
+                }
+            }
+        } finally {
+            // プロセスが終了したら、ステータスバーアイテムを隠す
+            currentAsirProcess = null;
+            asirCancelStatusBarItem.hide();
+        }
+    });
+}
+
 // コード診断の関数 
-function updateDiagnosticsAdvanced(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection): void {
+function updateDiagnosticsComprehensive(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection): Map<string, SymbolInfo> {
     if (document.languageId !== 'rr') {
-        return;
+        return new Map();
     }
 
     const text = document.getText();
     const diagnostics: vscode.Diagnostic[] = [];
+    const definedSymbols = new Map<string, SymbolInfo>();
+
+    // --- 括弧の不一致チェック
     const stack: BracketInfo[] = [];
     const bracketRegex = /(\(|\)|\[|\]|\{|\})/g;
-    let match;
+    let brancketMatch;
 
-    while ((match = bracketRegex.exec(text)) !== null) {
-        const bracket = match[0];
-        const position = document.positionAt(match.index);
+    while ((brancketMatch = bracketRegex.exec(text)) !== null) {
+        const bracket = brancketMatch[0];
+        const position = document.positionAt(brancketMatch.index);
 
         if (bracket === '(' || bracket === '[' || bracket === '{') {
             stack.push({ type: bracket, position });
@@ -437,11 +635,10 @@ function updateDiagnosticsAdvanced(document: vscode.TextDocument, diagnosticColl
             }
         }
     }
-
     // 閉じられていない開き括弧のチェック
     while (stack.length > 0) {
         const openBracket = stack.pop();
-        if (openBracket) { // ここで openBracket が undefined でないことを保証
+        if (openBracket) { 
             diagnostics.push(new vscode.Diagnostic(
                 new vscode.Range(openBracket.position, openBracket.position.translate(0, 1)),
                 `開き括弧 '${openBracket.type}' が閉じられていません`,
@@ -450,14 +647,202 @@ function updateDiagnosticsAdvanced(document: vscode.TextDocument, diagnosticColl
         }
     }
 
+    // ---未定義変数・関数の検出
+    const rawUsedIdentifiers: { name: string, range: vscode.Range, originalLine: string, originalIndex: number }[] = [];
+
+    const functionDefinitionRegex = /\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*\{/g; 
+    const assignmentRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=/g; 
+    const allIdentifiersInLineRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g;
+    const functionDeclarationRegex = /\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*;/g;
+    const externDeclarationRegex = /\bextern\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*;/g; 
+
+
+    // コメントを除外するためのパターン
+    const lineCommentRegex = /#.*/g;
+    const blockCommentRegex = /\/\*[\s\S]*?\*\//g;
+
+    const lines = text.split('\n');
+    lines.forEach((lineText, lineNum) =>{
+        let cleanLine = lineText;
+
+        // コメントを除去
+        cleanLine = cleanLine.replace(blockCommentRegex, '');
+        cleanLine = cleanLine.replace(lineCommentRegex,'')
+
+        assignmentRegex.lastIndex = 0;
+        functionDefinitionRegex.lastIndex = 0;
+        allIdentifiersInLineRegex.lastIndex = 0;
+        functionDeclarationRegex.lastIndex = 0;
+        externDeclarationRegex.lastIndex = 0;
+
+        // --変数定義の検出と変数名規則のチェック
+        // 代入分を検出してその左辺が大文字始まりかをチェックする。
+        let assignMatch: RegExpExecArray | null;
+        while ((assignMatch = assignmentRegex.exec(cleanLine)) !== null){
+            const varName = assignMatch[1];
+            const startPos = document.positionAt(document.offsetAt(new vscode.Position(lineNum, assignMatch.index)));
+            const endPos = startPos.translate(0, varName.length);
+
+            if (varName.match(/^[a-z]/)) {
+                diagnostics.push(new vscode.Diagnostic(
+                    new vscode.Range(startPos, endPos),
+                    `変数名は '${varName}' は大文字ので始まる必要があります。`,
+                    vscode.DiagnosticSeverity.Error
+                ));
+            }
+            if (varName.match(/^[A-Z]/)) {
+                definedSymbols.set(varName, { name: varName, type: 'variable', definitionRange: new vscode.Range(startPos, endPos) });
+            }
+        }
+
+        // --- 関数定義の検出
+        let funcDefMatch: RegExpExecArray | null;
+        while ((funcDefMatch = functionDefinitionRegex.exec(cleanLine)) !== null) {
+            const funcName = funcDefMatch[1];
+            const funcNameStartInMatch = funcDefMatch[0].indexOf(funcName);
+            const startPos = document.positionAt(document.offsetAt(new vscode.Position(lineNum, funcDefMatch.index + funcNameStartInMatch)));
+            const endPos = startPos.translate(0, funcName.length);
+            
+            // 関数小文字始まりチェック
+            if (funcName.match(/^[A-Z]/)) {
+                diagnostics.push(new vscode.Diagnostic(
+                    new vscode.Range(startPos, endPos),
+                    `関数名 '${funcName}' は小文字のアルファベットで始まる必要があります。`,
+                    vscode.DiagnosticSeverity.Error
+                ));
+            } else {
+                definedSymbols.set(funcName, { name: funcName, type: 'function', definitionRange: new vscode.Range(startPos, endPos) });
+            }
+
+            // 仮引数を抽出して定義済みシンボルとして扱う
+            const parameterString = funcDefMatch[2];
+            if (parameterString) {
+                const paramNames = parameterString.split(',').map(p => p.trim()).filter(p => p.length > 0);
+                paramNames.forEach(paramName => {
+                    // 仮引数も definedSymbols に追加
+                    if (!definedSymbols.has(paramName)) { // 既にグローバルで同名があれば上書きしない
+                        definedSymbols.set(paramName, { name: paramName, type: 'parameter' });
+                    }
+                });
+            }
+        }
+
+        // functionの検出
+        let funcDeclMatch: RegExpExecArray | null;
+        while ((funcDeclMatch = functionDeclarationRegex.exec(cleanLine)) !== null) {
+            const funcName = funcDeclMatch[1];
+            const funcNameStartInMatch = funcDeclMatch[0].indexOf(funcName);
+            const startPos = document.positionAt(document.offsetAt(new vscode.Position(lineNum, funcDeclMatch.index + funcNameStartInMatch)));
+            const endPos = startPos.translate(0, funcName.length);
+            if (!definedSymbols.has(funcName)) { 
+                definedSymbols.set(funcName, { name: funcName, type: 'function', definitionRange: new vscode.Range(startPos, endPos) });
+            }
+            const parametersString = funcDeclMatch[2]; 
+            if (parametersString) {
+                const paramNames = parametersString.split(',').map(p => p.trim()).filter(p => p.length > 0);
+                paramNames.forEach(paramName => {
+                    if (!definedSymbols.has(paramName)) { 
+                        definedSymbols.set(paramName, { name: paramName, type: 'parameter' });
+                    }
+                });
+            }
+        }
+
+        // externの検出
+        let externDeclMatch: RegExpExecArray | null;
+        while ((externDeclMatch = externDeclarationRegex.exec(cleanLine)) !== null) {
+            const varName = externDeclMatch[1];
+            const varNameStartInMatch = externDeclMatch[0].indexOf(varName);
+            const startPos = document.positionAt(document.offsetAt(new vscode.Position(lineNum, externDeclMatch.index + varNameStartInMatch)));
+            const endPos = startPos.translate(0, varName.length);
+
+            if (varName.match(/^[A-Z]/)) {
+                if (!definedSymbols.has(varName)) { 
+                    definedSymbols.set(varName, { name: varName, type: 'variable', definitionRange: new vscode.Range(startPos, endPos) });
+                }
+            } else {
+                 diagnostics.push(new vscode.Diagnostic(
+                    new vscode.Range(startPos, endPos),
+                    `外部変数名 '${varName}' は大文字のアルファベットで始まる必要があります (Asir の規則)`,
+                    vscode.DiagnosticSeverity.Error
+                ));
+            }
+        }
+
+        // すべての識別子が定義済みかをチェック
+        let idMatch: RegExpExecArray | null;
+        allIdentifiersInLineRegex.lastIndex = 0; // 各行で正規表現のlastIndexをリセット
+        while ((idMatch = allIdentifiersInLineRegex.exec(cleanLine)) !== null) {
+            const identifierName = idMatch[1];
+            const startPos = document.positionAt(document.offsetAt(new vscode.Position(lineNum, idMatch.index)));
+            const endPos = startPos.translate(0, identifierName.length);
+
+            rawUsedIdentifiers.push({ name: identifierName, range: new vscode.Range(startPos, endPos), originalLine: cleanLine, originalIndex: idMatch.index });
+        }
+    });
+
+    // 未定義のシンボルをチェック
+    rawUsedIdentifiers.forEach(symbol => {
+        // ユーザー定義関数などは警告しない
+        if (definedSymbols.has(symbol.name)) {
+            return;
+        }
+        // 組み込み関数やキーワードは警告しない
+        if (isBuiltInOrKeyword(symbol.name)) {
+            return;
+        }
+        // それ以外の識別子について
+        if (symbol.name.match(/^[a-z]/)) {
+            const afterIdentifier = symbol.originalLine.substring(symbol.originalIndex + symbol.name.length);
+            const isFunctionCallForm = afterIdentifier.match(/^\s*\(/);
+            if (isFunctionCallForm) {
+                diagnostics.push(new vscode.Diagnostic(
+                    symbol.range,
+                    `未定義の関数: '${symbol.name}'`,
+                    vscode.DiagnosticSeverity.Warning
+                ));
+            } else {
+            } 
+        } else {
+            diagnostics.push(new vscode.Diagnostic(
+                symbol.range,
+                `未定義の変数: '${symbol.name}'`,
+                vscode.DiagnosticSeverity.Warning
+            ));
+        }
+            
+    });
     diagnosticCollection.set(document.uri, diagnostics);
+    return definedSymbols;
 }
 
+
+// 括弧チェック用
 function isMatchingBracket(open: string, close: string): boolean {
     return (open === '(' && close === ')') ||
            (open === '[' && close === ']') ||
            (open === '{' && close === '}');
 }
+
+// 組み込み関数かキーワードかを判定する
+function isBuiltInOrKeyword(name:string): boolean {
+    return ASIR_KEYWORDS.includes(name) || ASIR_BUILTIN_FUNCTIONS.includes(name);
+}
+
+// 関数の仮引数かどうかを簡易的に判定する関数
+// 仮引数抽出時に行うため不要
+/*
+function isFunctionParameter(identifier: string, lineText: string, identifierIndex: number): boolean {
+    const preDefMatch = lineText.substring(0, identifierIndex).match(/\bdef\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
+    if (preDefMatch) {
+        const afterparen = lineText.substring(identifierIndex + identifier.length);
+        if (afterparen.trim().startsWith(')') || afterparen.trim().startsWith(',')){
+            return true;
+        }
+    }
+    return false;
+}
+*/
 
 // Webviewの関数
 /**

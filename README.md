@@ -1,6 +1,6 @@
 # Risa-Enhancers 
 
-これはVScodeでRisa/Asirのコードを書くための拡張機能 "Risa-Enhancers"です。
+これはVScodeでRisa/Asirのコードを書くための拡張機能 "risa-enhancers"です。
 
 ## 機能
 
@@ -24,6 +24,7 @@ VSCode上で`~.rr`の名前でファイルを作り、それにAsir言語で書�
 ![alt](https://github.com/kanjeve/Risa_Enhancers/blob/main/images/nopathwin.png)
 ![alt](https://github.com/kanjeve/Risa_Enhancers/blob/main/images/pathwin.png)
 
+
 WindowsユーザーはWSLを入れている場合は左下にある`Risa/Asir: WSL`または`Risa/Asir: Windows`をクリックすることで、計算を実行する場所を、Open XMを介した推奨版か、Asir GUI版かを選ぶことができます。
 個人的な所感ですが、Windowsモードの方が仮想環境を介さず、またOpen XMを介さない分、出力が表示されるまでの時間が早いです。
 WSLにおけるRisa/Asirの諸環境の構築はhowtowsl.txtに記載してありますので、参考にしてください。
@@ -31,7 +32,6 @@ WSLにおけるRisa/Asirの諸環境の構築はhowtowsl.txtに記載してあ�
 計算の実行中に右上のコーヒーカップ`Risa/Asir: Cancel Current Execution`、または右下の`Cancel Risa/Asir`をクリックすることで、計算を強制的に停止できます。計算時間が許容できないくらい長くなってしまった時や、無限ループした場合にお試しください。
 
 また、Jupyter Notebookを使ってAsirを起動できる（ように環境構築した）場合は、そこでもシンタックスハイライトやコード補完の機能が利用できます。なお、この拡張機能をインストールすることでJupyter Notebookを使ってAsirが計算できるようになる訳ではありません。カーネルの設定などはhowtowsl.txtに記載していますので、参考にしてください。
-![alt](https://github.com/kanjeve/Risa_Enhancers/blob/main/images/jupytesir.gif)
 
 ## 動作環境
 
@@ -39,7 +39,7 @@ WSLにおけるRisa/Asirの諸環境の構築はhowtowsl.txtに記載してあ�
 
 ## 未修整の部分
 
-- たまにエラーではない文もエラーとして出力されることがあります。いくつかには対応していますが、漏れがあるかもしれません。
+- エラー出ない文もエラーとして出力されることがあります。現在修整中ですが、時間がかかりそうです。
 
 ## 将来
 
@@ -82,6 +82,13 @@ WSLにおけるRisa/Asirの諸環境の構築はhowtowsl.txtに記載してあ�
 ### 0.2.1
 
 - エラーメッセージが出力されるように修正しました。
+
+### 0.2.2
+
+※このバージョンはとりあえず版です。理由あって利用するとVSCodeに「警告文」が頻繁に表示されますが、実行には問題はありませんので、警告文が気にならない場合にご利用ください。Macユーザーはこのバージョン以降で「Execute」コマンドが利用できるようになるかと思います。
+
+- Macでの実行におけるパスを`usr/local/bin/asir`に変更しました。
+- ユーザー定義の変数や関数の間違った使い方に対して「警告文」が表示されるようになりました。... が、正しい文脈に対してもエラーメッセージがでるようです。現在、鋭意修整中です。
 
 ## 参考
 主にGeminiとの対話によって作られました。

@@ -24,21 +24,21 @@
                 "foreground": "#008000" 
             }
         },
-        // キーワード (if, while, for, returnなど)
+        // キーワード
         {
             "scope": "keyword.control.rr",
             "settings": {
                 "foreground": "#0000FF" 
             }
         },
-        // 組み込み関数 (load, import, ctrl, cputimeなど)
+        // 組み込み関数
         {
             "scope": "support.function.builtin.rr",
             "settings": {
                 "foreground": "#6A0DAD" 
             }
         },
-        // 文字列 (ダブルクォート)
+        // 文字列
         {
             "scope": "string.quoted.double.rr",
             "settings": {
@@ -59,28 +59,28 @@
                 "foreground": "#098677" 
             }
         },
-        // 演算子 (+, -, *, / など)
+        // 演算子
         {
             "scope": "keyword.operator.rr",
             "settings": {
                 "foreground": "#0070C0" 
             }
         },
-        // 言語定数 (true, false, null など)
+        // 言語定数
         {
             "scope": "constant.language.rr",
             "settings": {
                 "foreground": "#800080" 
             }
         },
-        // 型 (int, poly, listなど)
+        // 型
         {
             "scope": "storage.type.rr",
             "settings": {
                 "foreground": "#007F7F" 
             }
         },
-        // 区切り文字 (カンマ, セミコロン, コロンなど)
+        // 区切り文字
         {
             "scope": "punctuation.separator.delimiter.rr",
             "settings": {
@@ -103,14 +103,14 @@
         // {
         //     "scope": "entity.name.function.rr",
         //     "settings": {
-        //         "foreground": "#606000" // オリーブグリーン
+        //         "foreground": "#606000" 
         //     }
         // },
         // 変数名
         // {
         //     "scope": "variable.other.rr",
         //     "settings": {
-        //         "foreground": "#333333" // ほとんど黒に近いグレー
+        //         "foreground": "#333333" 
         //     }
         // }
     ]

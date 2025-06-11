@@ -2,37 +2,71 @@
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "name": "Asir",
     "patterns": [
-        { "include": "#comments" },      
-        { "include": "#keywords" },      
-        { "include": "#strings" },      
-        { "include": "#numbers" },       
-        { "include": "#operators" },     
-        { "include": "#built-in-functions" }, 
-        { "include": "#language-constants" },
-        { "include": "#types" },
-        { "include": "#punctuation" } ,
-        { "include": "#functions" },
-        { "include": "#variables" } 
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#built-in-functions"
+        },
+        {
+            "include": "#language-constants"
+        },
+        {
+            "include": "#types"
+        },
+        {
+            "include": "#punctuation"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#variables"
+        },
+        {
+            "name": "keyword.control.rr",
+            "match": "\\b(if|while|for|return|break|continue|static|struct|do|else|extern|def|endmodule|function|global|local|localif|module|car|cdr|getopt|newstruct|map|pari|quote|recmap|timer|end|quit|true|false)\\b"
+        },
+        {
+            "name": "support.function.builtin.rr",
+            "match": "\\b(load|import|ctrl|cputime|append|gcd|list|matrix|print|det|inv|sin|cos|tan|log|exp|sqrt|abs|floor|ceil|round|eval|quote|map|reduce|length|typeof|char|size|\\@pi|\\@e)\\b"
+        }
     ],
     "repository": {
         "comments": {
-            "patterns": [{
-                "name": "comment.block.rr",
-                "begin": "/\\*",
-                "end": "\\*/",
-                "patterns": [
-                    {                            
-					"name": "comment.block.documentation.rr",
-                    "match": "(@[a-zA-Z]+)"
-                    }
-                ]
-            }]
+            "patterns": [
+                {
+                    "name": "comment.block.rr",
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "patterns": [
+                        {
+                            "name": "comment.block.documentation.rr",
+                            "match": "(@[a-zA-Z]+)"
+                        }
+                    ]
+                }
+            ]
         },
         "keywords": {
-            "patterns": [{
-                "name": "keyword.control.rr",
-                "match": "\\b(def|return|if|else|for|while|break|continue|true|false|end)\\b" 
-            }]
+            "patterns": [
+                {
+                    "name": "keyword.control.rr",
+                    "match": "\\b(if|while|for|return|break|continue|static|struct|do|else|extern|def|endmodule|function|global|local|localif|module|car|cdr|getopt|newstruct|map|pari|quote|recmap|timer|end|quit|true|false)\\b"
+                }
+            ]
         },
         "strings": {
             "name": "string.quoted.double.rr",
@@ -51,25 +85,25 @@
         },
         "operators": {
             "name": "keyword.operator.rr",
-            "match": "[+\\-*/%=<>&|!^]" 
+            "match": "[+\\-*/%=<>&|!^]"
         },
         "built-in-functions": {
             "name": "support.function.builtin.rr",
-            "match": "\\b(load|import|ctrl|cputime|append|gcd|list|matrix|print)\\b" 
+            "match": "\\b(load|import|ctrl|cputime|append|gcd|list|matrix|print)\\b"
         },
         "language-constants": {
             "name": "constant.language.rr",
-            "match": "\\b(true|false|null)\\b" 
+            "match": "\\b(true|false|null)\\b"
         },
         "types": {
             "name": "storage.type.rr",
-            "match": "\\b(int|poly|list|matrix|vector)\\b" 
+            "match": "\\b(int|poly|list|matrix|vector)\\b"
         },
         "punctuation": {
             "patterns": [
                 {
                     "name": "punctuation.separator.delimiter.rr",
-                    "match": "[,;:]" 
+                    "match": "[,;:]"
                 },
                 {
                     "name": "punctuation.bracket.square.rr",

@@ -2,7 +2,7 @@
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
   "description": "Enhance your computation for Risa/Asir! ",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "",
   "repository": {},
   "bugs": {},
@@ -86,7 +86,7 @@
         },
         "risaasirExecutor.asirPathMac": {
           "type": "string",
-          "default": "/Applications/asir.app/Contents/MacOS/asir", 
+          "default": "/usr/local/bin/asir", 
           "description": "Path to the Risa/Asir executable on macOS."
         },
         "risaasirExecutor.useWslFromWindows": {
@@ -123,13 +123,15 @@
       }
     ]
   },
+  "type": "module",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "npm run generate-tm-language && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "generate-tm-language": "node scripts/generateTmlanguage.js"
   },
   "devDependencies": { 
         "@types/vscode": "^1.100.0", 
