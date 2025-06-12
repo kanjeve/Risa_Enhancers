@@ -133,11 +133,19 @@
     "generate-tm-language": "node scripts/generateTmlanguage.js"
   },
   "devDependencies": { 
-        "@types/vscode": "^1.100.0", 
-        "@types/node": "^22.0.0",   
-        "@typescript-eslint/eslint-plugin": "^5.x", 
-        "@typescript-eslint/parser": "^5.x",        
-        "eslint": "^8.x",                           
-        "typescript": "^5.x"                        
-    }
+    "@types/vscode": "^1.100.0", 
+    "@types/node": "^22.0.0",   
+    "@typescript-eslint/eslint-plugin": "^5.x", 
+    "@typescript-eslint/parser": "^5.x",        
+    "eslint": "^8.x",                           
+    "typescript": "^5.x"                        
+  },
+  "dependencies": {
+    "@types/vscode": "^1.100.0",
+    "@types/node": "^22.0.0",   
+    "@typescript-eslint/eslint-plugin": "^5.x", 
+    "@typescript-eslint/parser": "^5.x",        
+    "eslint": "^8.x",                           
+    "typescript": "^5.x" 
+  }
 }
