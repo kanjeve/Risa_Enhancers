@@ -1,5 +1,6 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url'; 
 
 
 const ASIR_KEYWORDS = [
@@ -16,7 +17,8 @@ export const ASIR_BUILTIN_FUNCTIONS = [
     '@pi', '@e', 
 ];
 
-const __dirname = import.meta.dirname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const tmLanguagePath = path.join(__dirname, '..', 'syntaxes', 'rr.tmLanguage.json');
 
 // 既存のtmLanguage.jsonを読み込む
