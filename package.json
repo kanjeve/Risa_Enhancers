@@ -19,39 +19,55 @@
     "Other"
   ],
   "contributes": {
-    "languages": [{
-      "id": "rr",
-      "aliases": ["Asir", "rr"],
-      "extensions": [".rr"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "rr",
-      "scopeName": "source.rr",
-      "path": "./syntaxes/rr.tmLanguage.json"
-    }],
-    "snippets": [{
-      "language": "rr",
-      "path": "./snippets/rr.json"
-    }],
-    "commands": [ {
-      "command": "risa-enhancers.helloWorld",
-      "title": "Hello VS Code from Risa Enhancers!"
-    },{
-      "command": "risa_enhancers.executeCode",
-      "title": "Risa/Asir: Execute Code",
-      "icon": {
-        "light": "resources/light/play.svg",
-        "dark": "resources/dark/play.svg"
+    "languages": [
+      {
+        "id": "rr",
+        "aliases": [
+          "Asir",
+          "rr"
+        ],
+        "extensions": [
+          ".rr"
+        ],
+        "configuration": "./language-configuration.json"
       }
-    },{
-      "command": "risa_enhancers.cancelExecution",
-      "title": "Risa/Asir: Cancel Current Execution",
-      "icon": "resources/other/coffe.svg"
-    },{
-      "command": "risa_enhancers.switchExecutionMode",
-      "title": "Risa/Asir: switch Execution Mode"
-    }],
+    ],
+    "grammars": [
+      {
+        "language": "rr",
+        "scopeName": "source.rr",
+        "path": "./syntaxes/rr.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "rr",
+        "path": "./snippets/rr.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "risa-enhancers.helloWorld",
+        "title": "Hello VS Code from Risa Enhancers!"
+      },
+      {
+        "command": "risa_enhancers.executeCode",
+        "title": "Risa/Asir: Execute Code",
+        "icon": {
+          "light": "resources/light/play.svg",
+          "dark": "resources/dark/play.svg"
+        }
+      },
+      {
+        "command": "risa_enhancers.cancelExecution",
+        "title": "Risa/Asir: Cancel Current Execution",
+        "icon": "resources/other/coffe.svg"
+      },
+      {
+        "command": "risa_enhancers.switchExecutionMode",
+        "title": "Risa/Asir: switch Execution Mode"
+      }
+    ],
     "menus": {
       "editor/context": [
         {
@@ -64,29 +80,30 @@
           "when": "resourceLangId == rr",
           "command": "risa_enhancers.executeCode",
           "group": "navigation@1"
-        },{
+        },
+        {
           "when": "resourceLangId == rr",
           "command": "risa_enhancers.cancelExecution",
           "group": "navigation@2"
         }
       ]
     },
-    "configuration": { 
+    "configuration": {
       "title": "Risa/Asir Executor Configuration",
       "properties": {
         "risaasirExecutor.asirPathWindows": {
           "type": "string",
-          "default": "C:\\Program Files\\asir\\bin\\asir.exe", 
+          "default": "C:\\Program Files\\asir\\bin\\asir.exe",
           "description": "Path to the Risa/Asir executable on Windows."
         },
         "risaasirExecutor.asirPathLinux": {
           "type": "string",
-          "default": "/usr/local/bin/asir", 
+          "default": "/usr/local/bin/asir",
           "description": "Path to the Risa/Asir executable on Linux (e.g., in WSL)."
         },
         "risaasirExecutor.asirPathMac": {
           "type": "string",
-          "default": "/usr/local/bin/asir", 
+          "default": "/usr/local/bin/asir",
           "description": "Path to the Risa/Asir executable on macOS."
         },
         "risaasirExecutor.useWslFromWindows": {
@@ -103,19 +120,29 @@
         }
       }
     },
-    "completionProviders": [ {
-      "language": "rr", 
-      "selector": [
-        { "language": "rr", "pattern": ".*(load|import|ctrl)\\\\(\\\\s*\\\\\"[^\"\\\\]*$" }
-      ],
-      "triggerCharacters": ["\"", "("] 
-    }],
-    "themes": [{
+    "completionProviders": [
+      {
+        "language": "rr",
+        "selector": [
+          {
+            "language": "rr",
+            "pattern": ".*(load|import|ctrl)\\\\(\\\\s*\\\\\"[^\"\\\\]*$"
+          }
+        ],
+        "triggerCharacters": [
+          "\"",
+          "("
+        ]
+      }
+    ],
+    "themes": [
+      {
         "label": "Asir Custom Theme",
-        "uiTheme": "vs", 
+        "uiTheme": "vs",
         "path": "./themes/asir-custom-theme.json"
-    }],
-    "keybindings":[
+      }
+    ],
+    "keybindings": [
       {
         "command": "risa_enhancers.executeCode",
         "key": "shift+enter",
@@ -132,20 +159,15 @@
     "test": "node ./out/test/runTest.js",
     "generate-tm-language": "node scripts/generateTmlanguage.js"
   },
-  "devDependencies": { 
-    "@types/vscode": "^1.100.0", 
-    "@types/node": "^22.0.0",   
-    "@typescript-eslint/eslint-plugin": "^5.x", 
-    "@typescript-eslint/parser": "^5.x",        
-    "eslint": "^8.x",                           
-    "typescript": "^5.x"                        
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^5.x",
+    "@typescript-eslint/parser": "^5.x",
+    "eslint": "^8.x",
+    "typescript": "^5.x"
   },
   "dependencies": {
-    "@types/vscode": "^1.100.0",
-    "@types/node": "^22.0.0",   
-    "@typescript-eslint/eslint-plugin": "^5.x", 
-    "@typescript-eslint/parser": "^5.x",        
-    "eslint": "^8.x",                           
-    "typescript": "^5.x" 
+    "ctrlc-windows": "^2.2.0"
   }
 }
