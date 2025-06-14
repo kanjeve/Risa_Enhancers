@@ -165,6 +165,7 @@
     "@typescript-eslint/eslint-plugin": "^5.x",
     "@typescript-eslint/parser": "^5.x",
     "eslint": "^8.x",
+    "ts-node": "^10.9.2",
     "typescript": "^5.x"
   },
   "dependencies": {
