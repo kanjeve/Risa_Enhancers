@@ -2,7 +2,7 @@
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
   "description": "Enhance your computation for Risa/Asir! ",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "publisher": "",
   "repository": {},
   "bugs": {},
@@ -52,11 +52,8 @@
       },
       {
         "command": "risa_enhancers.executeCode",
-        "title": "Risa/Asir: Execute Code",
-        "icon": {
-          "light": "resources/light/play.svg",
-          "dark": "resources/dark/play.svg"
-        }
+        "title": "Risa/Asir: Send Code to Interactive Session",
+        "icon": "$(play)"
       },
       {
         "command": "risa_enhancers.cancelExecution",
@@ -66,6 +63,14 @@
       {
         "command": "risa_enhancers.switchExecutionMode",
         "title": "Risa/Asir: switch Execution Mode"
+      },
+      {
+        "command": "risa_enhancers.startAsirInteractive",
+        "title": "Risa/Asir: Start Interactive Session"
+      },
+      {
+        "command": "risa_enhancers.stopAsirInteractive",
+        "title": "Risa/Asir: Stop Interactive Session"
       }
     ],
     "menus": {
@@ -94,17 +99,20 @@
         "risaasirExecutor.asirPathWindows": {
           "type": "string",
           "default": "C:\\Program Files\\asir\\bin\\asir.exe",
-          "description": "Path to the Risa/Asir executable on Windows."
+          "description": "Path to the Risa/Asir executable on Windows.",
+          "scope": "resource"
         },
         "risaasirExecutor.asirPathLinux": {
           "type": "string",
           "default": "/usr/local/bin/asir",
-          "description": "Path to the Risa/Asir executable on Linux (e.g., in WSL)."
+          "description": "Path to the Risa/Asir executable on Linux (e.g., in WSL).",
+          "scope": "resource"
         },
         "risaasirExecutor.asirPathMac": {
           "type": "string",
           "default": "/usr/local/bin/asir",
-          "description": "Path to the Risa/Asir executable on macOS."
+          "description": "Path to the Risa/Asir executable on macOS.",
+          "scope": "resource"
         },
         "risaasirExecutor.useWslFromWindows": {
           "type": "boolean",
@@ -147,6 +155,12 @@
         "command": "risa_enhancers.executeCode",
         "key": "shift+enter",
         "when": "editorTextFocus && resourceExtname == .rr"
+      },
+      {
+        "command": "risa_enhancers.startAsirInteractive",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "editorTextFocus && resourceExtname == .rr"
       }
     ]
   },
@@ -160,13 +174,16 @@
     "generate-tm-language": "node scripts/generateTmlanguage.js"
   },
   "devDependencies": {
+    "@eslint/js": "^9.29.0",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^5.x",
     "@typescript-eslint/parser": "^5.x",
-    "eslint": "^8.x",
+    "eslint": "^8.57.1",
+    "globals": "^16.2.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.x"
+    "typescript": "^5.x",
+    "typescript-eslint": "^8.34.1"
   },
   "dependencies": {
     "ctrlc-windows": "^2.2.0"
