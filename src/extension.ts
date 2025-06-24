@@ -259,7 +259,16 @@ export function activate(context: vscode.ExtensionContext) {
                             finalErrorMessage = finalErrorMessage.replace(quitMessage, '').trim();
                         }
 
-                        if (code !== 0) {
+                        const CANCELLATION_CODES_WIN = [3221225786]; 
+                        const CANCELLATION_CODES_UNIX = [130, 143]; 
+
+                        const isCancelledExit = (
+                            (typeof code === 'number' && process.platform === 'win32' && CANCELLATION_CODES_WIN.includes(code)) ||
+                            (typeof code === 'number' && (process.platform === 'linux' || process.platform === 'darwin') && CANCELLATION_CODES_UNIX.includes(code))
+                        );
+
+
+                        if (code !== 0 && isCancelledExit) {
                             asirOutputChannel.appendLine(`--- Risa/Asir process exited with code ${code} (Error) ---`);
                             vscode.window.showErrorMessage(`Risa/Asir execution failed with code ${code}. Check 'Risa/Asir CLI Output' for details.`);
                             if (outputAccumulator.length > 0) {
@@ -329,6 +338,8 @@ export function activate(context: vscode.ExtensionContext) {
             const resourceUri = editor.document.uri;
             const config = vscode.workspace.getConfiguration('risaasirExecutor', resourceUri);
 
+            const debugStartupDelay = config.get<number>('debugStartupDelay', 3000);
+
             const currentOsPlatform = process.platform;
             let commandLine: string;
 
@@ -391,16 +402,22 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             }));
 
-            // Risa/Asir起動
-            currentAsirTerminal.sendText(commandLine);
+            // ターミナル表示
             currentAsirTerminal.show(true);
-            // 起動したらちょっと待つ
-            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Risa/Asir 起動
+            console.log(`DEBUG: Sending Risa/Asir startup command via sendText.`);
+            currentAsirTerminal.sendText(commandLine);
+
+            // 少し待つ
+            await new Promise(resolve => setTimeout(resolve, debugStartupDelay)); 
+            console.log("DEBUG: Waited for Risa/Asir startup completion.");
+                
         } else {
             // デバッグセッションがアクティブな場合
             vscode.window.showInformationMessage('Existing Risa/Asir debug session found. Loading code into it.');
             currentAsirTerminal.show(true);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         // 一時ファイルのパスを読み込めるように変換
@@ -419,8 +436,14 @@ export function activate(context: vscode.ExtensionContext) {
         // loadコマンドを送信
         asirOutputChannel.appendLine(`> ${loadCommand}`);
         currentAsirTerminal.sendText(loadCommand);
+        await new Promise(resolve => setTimeout(resolve, 500)); 
+        console.log(`DEBUG: Load command sent.`);
+        const debugStartupDelay = config.get<number>('debugStartupDelay', 3000);
 
-        vscode.window.showInformationMessage('Code loaded for debugging. Call your function (e.g., `myfunc(1);`) in the "Risa/Asir Debug" terminal and use Ctrl+C then "d" to enter debug mode.');
+        vscode.window.showInformationMessage(
+            'Code loaded for debugging. Call your function (e.g., `myfunc(1);`) in the "Risa/Asir Debug" terminal and use Ctrl+C then "d" to enter debug mode.' + 
+            `If loading fails, try increasing the "Risa/Asir Executor: Debug Startup Delay" setting (currently ${debugStartupDelay}ms).`
+        );
         
 
         // ターミナルが閉じられるまで拡張機能が終了しないようにする
@@ -443,12 +466,16 @@ export function activate(context: vscode.ExtensionContext) {
         currentAsirTerminal.sendText('quit;');
 
         // 少し待つ
+        const terminalClosedByQuit = new Promise<void>(resolve => {
+            const disposable = vscode.window.onDidCloseTerminal(e => {
+                if (e === currentAsirTerminal) { 
+                    disposable.dispose(); 
+                    resolve();
+                }
+            });
+        });
         const timeout = new Promise<void>(resolve => setTimeout(resolve, 5000));
-        if (debugTerminalClosedPromise) {
-            await Promise.race([debugTerminalClosedPromise, timeout]);
-        } else {
-            await timeout; 
-        }
+        await Promise.race([terminalClosedByQuit, timeout]);
 
         // 終わらないなら強制終了
         if(currentAsirTerminal) {

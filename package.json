@@ -125,6 +125,11 @@
           "default": "Ubuntu",
           "description": "The name of the WSL distribution to use (e.g., Ubuntu, Debian). Only applicable if 'Use WSL from Windows' is enabled.",
           "scope": "resource"
+        },
+        "risaasirExecutor.debugStartupDelay": {
+          "type": "number",
+          "default": 3000,
+          "description": "Adjust the delay (in milliseconds) before sending the load command sessions. Increase this if Risa/Asir fails to load the file."
         }
       }
     },
