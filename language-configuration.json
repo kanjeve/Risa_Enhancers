@@ -43,7 +43,7 @@
             "action": {
                 "indent": "none",
                 "indentAction": "none",
-                "appendText": " * " // ★ここに注目: 改行後に自動挿入される文字列
+                "appendText": " * " // 改行後に自動挿入される文字列
             }
         },
         {
@@ -52,7 +52,7 @@
             "action": {
                 "indent": "none",
                 "indentAction": "none",
-                "appendText": "* " // ★ここに注目: 改行後に自動挿入される文字列
+                "appendText": "* " // 改行後に自動挿入される文字列
             }
         }
     ]

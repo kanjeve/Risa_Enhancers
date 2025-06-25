@@ -70,7 +70,7 @@
         {
             "scope": "constant.language.rr",
             "settings": {
-                "foreground": "#800080" 
+                "foreground": "#B05F00" 
             }
         },
         // 型
@@ -84,7 +84,7 @@
         {
             "scope": "punctuation.separator.delimiter.rr",
             "settings": {
-                "foreground": "#505050" 
+                "foreground": "#707070" 
             }
         },
         // 括弧、ブラケット
@@ -95,23 +95,36 @@
                 "punctuation.bracket.parenthesis.rr"
             ],
             "settings": {
-                "foreground": "#505050" 
+                "foreground": "#707070" 
+            }
+        },
+        // ユーザー定義関数名
+        {
+            "scope": "entity.name.function.rr",
+            "settings": {
+                "foreground": "#993300" 
+            }
+        },
+        // 変数名
+        {
+            "scope": "variable.other.rr",
+            "settings": {
+                "foreground": "#000000" 
+            }
+        },
+         // モジュール名 
+        {
+            "scope": "entity.name.module.rr",
+            "settings": {
+                "foreground": "#0055AA" 
+            }
+        },
+        // 構造体名 
+        {
+            "scope": "entity.name.struct.rr",
+            "settings": {
+                "foreground": "#AA5500" 
             }
         }
-
-        // ユーザー定義関数名
-        // {
-        //     "scope": "entity.name.function.rr",
-        //     "settings": {
-        //         "foreground": "#606000" 
-        //     }
-        // },
-        // 変数名
-        // {
-        //     "scope": "variable.other.rr",
-        //     "settings": {
-        //         "foreground": "#333333" 
-        //     }
-        // }
     ]
 }

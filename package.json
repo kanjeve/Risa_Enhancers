@@ -2,14 +2,13 @@
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
   "description": "Enhance your computation for Risa/Asir! ",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "",
   "repository": {},
   "bugs": {},
   "homepage": "",
   "activationEvents": [
-    "onLanguage:rr",
-    "onNotebook:jupyter-notebook"
+    "onLanguage:rr"
   ],
   "main": "./out/extension.js",
   "engines": {
