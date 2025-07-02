@@ -1,0 +1,34 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ASIR_BUILTIN_FUNCTIONS = exports.ASIR_KEYWORDS = void 0;
+exports.ASIR_KEYWORDS = [
+    'if', 'while', 'for', 'return', 'break', 'continue', 'static', 'struct', 'do', 'else', 'extern',
+    'def', 'endmodule', 'function', 'global', 'local', 'localf', 'module',
+    'car', 'cdr', 'getopt', 'newstruct', 'map', 'pari', 'quote', 'recmap', 'timer',
+    'end', 'quit', 'true', 'false',
+];
+exports.ASIR_BUILTIN_FUNCTIONS = [
+    'access', 'af', 'af_noalg', 'alg', 'algptorat', 'algtodalg', 'algv', 'ann', 'ann0', 'append', 'arfleg', 'args', 'asciitostr', 'asq',
+    'bfct', 'bfunction', 'bload', 'bload27', 'bsave',
+    'call', 'car', 'cdr', 'ceir', 'characteristic_ff', 'clear_canvas', 'close_file', 'bload', 'cola', 'colm', 'colx', 'conj', 'conplot', 'cons', 'cputime', 'cr_gcda', 'ctrl', 'ctrl', 'ctrl', 'currenttime', 'cyclic',
+    'dabs', 'dacos', 'dalgtoalg', 'dalgtodp', 'dasin', 'datan', 'dceil', 'dcos', 'debug', 'defpoly', 'defpoly_mod2', 'deg', 'delete_history', 'det', 'deval', 'dexp', 'dfloor', 'dgr', 'diff', 'dlog', 'dn',
+    'dpm_dptodpm', 'dpm_dtol', 'dpm_hc', 'dpm_hm', 'dpm_hp', 'dpm_ht', 'dpm_ltod', 'dpm_nf', 'dpm_nf_and_quotient', 'dpm_redble', 'dpm_rest', 'dpm_schreyer_base', 'dpm_schreyer_frame', 'dpm_set_schreyer_level', 'dpm_sp', 'dpm_sp_nf',
+    'dptoalg', 'dp_dehomo', 'dp_dtop', 'dp_etov', 'dp_f4_main', 'dp_f4_mod_main', 'dp_gr_flags', 'dp_gr_f_main', 'dp_gr_f_main', 'dp_gr_mod_main', 'dp_gr_print', 'dp_hc', 'dp_hm', 'dp_homo', 'dp_ht', 'dp_lcm', 'dp_mag', 'dp_mbase', 'dp_mod', 'dp_nf', 'dp_nf_mod', 'dp_ord', 'dp_prim', 'dp_ptod', 'dp_ptozp',
+    'dp_rat', 'dp_red', 'dp_redble', 'dp_red_mod', 'dp_rest', 'dp_set_top_weight', 'dp_set_weight', 'dp_sp', 'dp_sp_mod', 'dp_subd', 'dp_sugar', 'dp_td', 'dp_true_nf', 'dp_true_nf_mod', 'dp_vtoe', 'dp_weyl_f4_main', 'dp_weyl_f4_main', 'dp_weyl_gr_f_main', 'dp_weyl_gr_main', 'dp_weyl_gr_mod_main', 'dp_weyl_nf', 'dp_weyl_nf_mod', 'dp_weyl_set_weight',
+    'draw_obj', 'draw_string', 'drint', 'dsin', 'dsqrt', 'dtan', 'ecm_add_ff', 'ecm_chsgn_ff', 'ecm_sub_ff', 'ediff', 'end', 'error', 'eval', 'eval_str', 'extdeg_ff',
+    'fac', 'fctr', 'fctr_ff', 'field_order_ff', 'field_type_ff', 'flist', 'floor', 'funargs', 'functor',
+    'gb_comp', 'gcd', 'gcdz', 'generate_port', 'generic_bfct', 'getopt', 'get_byte', 'get_line', 'get_rootdir', 'gf2nton', 'gf2ntop', 'gr', 'gr_minipoly', 'gr_mod',
+    'hcyclic', 'heap', 'help', 'hgr', 'hkatsura', 'iand', 'idiv', 'ifplot', 'igcd', 'igcdcntl', 'ilcm', 'int32ton', 'inttorat', 'inv', 'invmat', 'ior', 'irem', 'irredcheck_ff', 'ishift', 'isqrt', 'ixor',
+    'katsura', 'kmul', 'ksquare', 'ktmul', 'length', 'lex_hensel', 'lex_hensel_gsl', 'lex_tl', 'lmptop', 'load', 'lprime', 'lrandom', 'ltov',
+    'map', 'mat', 'matc', 'matr', 'matrix', 'mindeg', 'minipoly', 'minipolym', 'modfctr', 'module_definedp', 'module_list', 'mt_load', 'mt_save',
+    'nd_det', 'nd_f4', 'nd_f4_trace', 'nd_gr', 'nd_gr_postproc', 'nd_gr_trace', 'nd_weyl_gr', 'nd_weyl_gr_postproc', 'nd_weyl_gr_trace', 'newalg', 'newbytearray', 'newmat', 'newstruct', 'newvect', 'nm', 'nmono', 'ntogf2n', 'ntoint32', 'ntype',
+    'open_canvas', 'open_file', 'ord', 'output', 'ox_cmo_rpc', 'ox_execute_string', 'ox_flush', 'ox_get', 'ox_get_serverinfo', 'ox_launch', 'ox_launch_generic', 'ox_launch_nox', 'ox_pop_cmo', 'ox_pop_local', 'ox_pops', 'ox_push_cmd', 'ox_push_cmo', 'ox_push_local', 'ox_reset', 'ox_rpc', 'ox_select', 'ox_shutdown', 'ox_sync',
+    'p_nf', 'p_nf_mod', 'p_terms', 'p_true_nf', 'p_true_nf_mod', 'pari', 'plot', 'plotover', 'polarplot', 'prim', 'primadec', 'prime', 'primedec', 'primedec_mod', 'print', 'psubst', 'ptogf2n', 'ptosfp', 'ptozp', 'purge_stdin', 'put_byte',
+    'qsort', 'quit', 'random', 'random_ff', 'randpoly_ff', 'rattoalgp', 'red', 'register_handler', 'register_server', 'remove_file', 'remove_module', 'res', 'reverse', 'rint', 'rowa', 'rowm', 'rowx', 'rtostr',
+    'sdiv', 'sdivm', 'set_field', 'set_upfft', 'set_upkara', 'set_uptkara', 'setbprec', 'setmod', 'setmod_ff', 'setprec', 'setround', 'sffctr', 'sfptop', 'shell', 'simp_ff', 'simpalg', 'size', 'sleep', 'sp', 'sp_noalg', 'sp_norm', 'sqfr', 'sqr', 'sqrm', 'srem', 'sremm', 'str_chr', 'str_len', 'strtoascii', 'strtov', 'struct_type', 'sub_str', 'subst',
+    'tdiv', 'time', 'timer', 'tolex', 'tolex_d', 'tolex_gsl', 'tolex_gsl_d', 'tolex_tl', 'tolexm', 'try_accept', 'try_bind_listen', 'try_connect', 'tstart', 'tstop', 'type', 'uc', 'udecomp', 'udiv', 'ufctrhint',
+    'ugcd', 'uinv_as_power_series', 'umul', 'umul_ff', 'urem', 'urembymul', 'urembymul_precomp', 'ureverse', 'ureverse_inv_as_power_series', 'usquare', 'usquare_ff', 'utmul', 'utmul_ff', 'utrunc',
+    'var', 'vars', 'vect', 'vector', 'version', 'vtol', 'vtype', 'which',
+    '@n', '@@', '@i', '@pi', '@e', '@', '@>', '@<', '@>=', '@<=', '@==', '@&&', '@||',
+];
+//# sourceMappingURL=builtins.js.map
