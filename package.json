@@ -2,7 +2,7 @@
   "name": "risa-enhancers",
   "displayName": "Risa_Enhancers",
   "description": "Enhance your computation for Risa/Asir! ",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "",
   "repository": {},
   "bugs": {},
@@ -169,22 +169,25 @@
     ]
   },
   "scripts": {
-  "vscode:prepublish": "npm run compile:production",
-  "compile": "npm run generate-tm-language && webpack --mode development",
-  "compile:production": "npm run generate-tm-language && webpack --mode production",
-  "watch": "webpack --watch --mode development",
-  "package": "npm run compile:production && vsce package",
-  "lint": "eslint src --ext ts",
-  "pretest": "npm run compile && npm run lint",
-  "test": "node ./dist/test/runTest.js",
-  "generate-tm-language": "node scripts/generateTmlanguage.js"
-},
+    "vscode:prepublish": "npm run compile:production",
+    "compile": "npm run generate-tm-language && webpack --mode development",
+    "compile:production": "npm run generate-tm-language && webpack --mode production",
+    "watch": "webpack --watch --mode development",
+    "package": "npm run compile:production && vsce package",
+    "lint": "eslint src --ext ts",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./dist/test/runTest.js",
+    "generate-tm-language": "node scripts/generateTmlanguage.js"
+  },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@risa-scope/pasirser": "file:../pasirser",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^5.x",
     "@typescript-eslint/parser": "^5.x",
+    "antlr4ng": "^3.0.16",
+    "ctrlc-windows": "^2.2.0",
     "eslint": "^8.57.1",
     "globals": "^16.2.0",
     "ts-loader": "^9.5.2",
@@ -192,11 +195,6 @@
     "typescript": "^5.x",
     "typescript-eslint": "^8.34.1",
     "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1",
-    "@risa-scope/pasirser": "file:../pasirser",
-    "antlr4ng": "^3.0.16",
-    "ctrlc-windows": "^2.2.0"
-  },
-  "dependencies": {
+    "webpack-cli": "^6.0.1"
   }
 }
