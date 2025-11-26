@@ -1,3 +1,5 @@
+** ※リモート管理の観点からリポジトリを [New_Risa_Enhance](https://github.com/kanjeve/New_Risa_Enhance) に移したため、このリポジトリは今後更新されません。 **
+
 # Risa-Enhancers 
 
 これはVScodeでRisa/Asirのコードを書くための拡張機能 "risa-enhancers"です。
