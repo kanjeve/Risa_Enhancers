@@ -1,4 +1,4 @@
-** ※リモート管理の観点からリポジトリを [New_Risa_Enhance](https://github.com/kanjeve/New_Risa_Enhance) に移したため、このリポジトリは今後更新されません。 **
+**※リモート管理の観点からリポジトリを [New_Risa_Enhance](https://github.com/kanjeve/New_Risa_Enhance) に移したため、このリポジトリは今後更新されません。**
 
 # Risa-Enhancers 
 
